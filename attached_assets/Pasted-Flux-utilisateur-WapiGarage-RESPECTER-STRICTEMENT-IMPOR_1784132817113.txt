@@ -1,0 +1,186 @@
+Flux utilisateur WapiGarage (À RESPECTER STRICTEMENT)
+
+⚠️ IMPORTANT : Le système de navigation, d’authentification et de redirection doit suivre exactement le schéma ci-dessous. Ne pas inventer d’autres parcours.
+
+1. Ouverture de l’application
+
+Au lancement :
+
+Afficher le Splash Screen
+Vérifier la session utilisateur
+
+Si une session existe :
+
+Restaurer automatiquement les données utilisateur
+Rediriger vers le bon espace :
+Client → Accueil
+Garage Pro → Dashboard Garage
+
+Si aucune session n’existe :
+
+Afficher la page de connexion
+
+⸻
+
+2. Page de connexion
+
+L’utilisateur doit choisir son type de compte :
+
+Option 1 : Client
+
+Option 2 : Garage Pro
+
+⸻
+
+3. Parcours CLIENT
+
+Cas 1 : Client existant
+
+L’utilisateur :
+
+Sélectionne “Client”
+Se connecte avec Email/Mot de passe ou Google
+
+Après connexion :
+
+Restaurer automatiquement :
+Profil
+Messages
+Favoris
+Véhicules
+Avis
+
+Puis rediriger directement vers :
+
+🏠 ACCUEIL CLIENT
+
+⸻
+
+Cas 2 : Nouveau Client
+
+L’utilisateur :
+
+Sélectionne “Client”
+Crée un compte
+
+Après création du compte :
+
+Afficher une page de configuration de profil contenant :
+
+Champs obligatoires
+
+Prénom
+Nom
+
+Champ optionnel
+
+Photo de profil
+
+Lorsque la configuration est terminée :
+
+➡️ Créer le profil utilisateur
+
+➡️ Rediriger directement vers :
+
+🏠 ACCUEIL CLIENT
+
+⸻
+
+4. Parcours GARAGE PRO
+
+Cas 1 : Garage Pro existant
+
+L’utilisateur :
+
+Sélectionne “Garage Pro”
+Se connecte
+
+Après connexion :
+
+Restaurer automatiquement :
+
+Profil Garage
+Informations Garage
+Photos
+Horaires
+Services
+Messages
+Avis
+
+Puis rediriger directement vers :
+
+🔧 DASHBOARD GARAGE
+
+⸻
+
+Cas 2 : Nouveau Garage Pro
+
+L’utilisateur :
+
+Sélectionne “Garage Pro”
+Crée un compte
+
+Après création du compte :
+
+Ouvrir automatiquement un formulaire de création de garage composé de 5 étapes.
+
+➡️ Créer le garage
+
+➡️ Rediriger directement vers :
+
+🔧 DASHBOARD GARAGE
+
+⸻
+
+5. Évolution Client → Garage Pro
+
+Un utilisateur Client doit pouvoir devenir Garage Pro sans créer un nouveau compte.
+
+Dans “Mon Espace”, afficher un bouton :
+
+🔧 “Passer en mode Pro”
+
+Lorsque l’utilisateur clique :
+
+Ouvrir le même formulaire Garage en 5 étapes
+Créer le garage
+Associer le garage au compte existant
+
+Une fois terminé :
+
+➡️ Rediriger vers :
+
+🔧 DASHBOARD GARAGE
+
+Le compte conserve alors :
+
+Son profil Client
+Son profil Garage
+
+Le même utilisateur peut utiliser les deux espaces.
+
+⸻
+
+Règles obligatoires
+
+✅ Un seul compte utilisateur
+
+✅ Un Client peut devenir Garage Pro
+
+✅ Les données sont restaurées automatiquement à chaque connexion
+
+✅ Nouveau Client → Configuration Profil → Accueil
+
+✅ Nouveau Garage → Formulaire 5 étapes → Dashboard
+
+✅ Garage existant → Dashboard direct
+
+✅ Client existant → Accueil direct
+
+❌ Ne jamais envoyer un nouveau garage sur l’accueil client
+
+❌ Ne jamais envoyer un nouveau client sur le dashboard garage
+
+❌ Ne jamais demander la création d’un deuxième compte pour devenir Garage Pro
+
+L’ensemble de l’application doit respecter strictement cette architecture de navigation et d’authentification.

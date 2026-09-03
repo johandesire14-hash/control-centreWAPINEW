@@ -1,0 +1,20 @@
+Dans le projet mobile (artifacts/mobile), remplace complètement l'utilisation des icônes basées sur des polices de caractères (@expo/vector-icons : Feather, FontAwesome, Ionicons) par la bibliothèque lucide-react-native, qui utilise de vrais dessins vectoriels (SVG) au lieu de polices. Objectif : éliminer un bug d'affichage où les icônes ne se chargent pas correctement sur Android alors qu'elles fonctionnent sur iOS.
+ 
+Étapes à suivre :
+ 
+1. Installe la dépendance lucide-react-native (et sa dépendance react-native-svg si elle n'est pas déjà présente) dans artifacts/mobile.
+ 
+2. Cherche dans tout le dossier artifacts/mobile toutes les occurrences de :
+   - import { ... } from "@expo/vector-icons"
+   - <Feather name="..." ... />
+   - <FontAwesome name="..." ... />
+   - <Ionicons name="..." ... />
+ 
+3. Pour chaque icône trouvée, remplace-la par l'équivalent visuel le plus proche disponible dans lucide-react-native (par exemple : Feather "home" → Lucide "Home", Feather "search" → Lucide "Search", Feather "message-circle" → Lucide "MessageCircle", Feather "user" → Lucide "User", Feather "shield" → Lucide "Shield", Feather "star" → Lucide "Star", Feather "zap" → Lucide "Zap", FontAwesome "google" → garde une icône Google appropriée si disponible dans lucide, sinon utilise un SVG dédié pour le logo Google). Conserve exactement les mêmes tailles (size) et couleurs (color) que dans le code actuel.
+ 
+4. Supprime les imports de @expo/vector-icons qui ne sont plus utilisés une fois le remplacement terminé. Ne touche à rien d'autre dans le projet (pas de changement de logique, de style, ou de comportement en dehors du remplacement des icônes).
+ 
+5. Ne modifie rien côté iOS ou dans la configuration native (app.json, dossiers ios/android) — uniquement le code React/TypeScript des composants.
+ 
+6. Une fois terminé, donne-moi la liste complète des fichiers modifiés et un résumé des remplacements effectués (ancien nom d'icône → nouveau nom d'icône), pour que je puisse vérifier visuellement chaque écran.
+ 

@@ -1,0 +1,31 @@
+Voici le prompt à coller dans Replit :
+
+“Apporter les modifications suivantes au projet GitHub. Ne modifier que les fichiers concernés, ne rien recréer from scratch.
+⛔ RÈGLES STRICTES
+Ne modifier que ce qui est listé ci-dessous
+Ne pas toucher au reste du code
+Appliquer exactement ce qui est décrit
+1. SUPPRIMER LE NUMÉRO DE TÉLÉPHONE DU PROFIL PUBLIC Sur la page publique du garage (/garage/[id]), retirer complètement l’affichage du numéro de téléphone. Le bouton ‘Appeler’ peut rester mais le numéro ne doit pas être visible en clair.
+2. ENVOI DE PHOTO DANS LE CHAT Dans l’écran de conversation (/messages), ajouter un bouton icône image à gauche du champ de saisie de texte :
+Appuyer dessus demande la permission médiathèque en français puis ouvre le sélecteur d’images natif
+La photo sélectionnée est uploadée dans le bucket Supabase Storage chat-photos
+L’URL est envoyée comme message dans la conversation et affichée comme image dans le fil
+La photo s’affiche en miniature dans le fil, appuyer dessus l’ouvre en plein écran
+3. SUPPRIMER LES STATISTIQUES DE L’ACCUEIL Sur la page d’accueil, supprimer complètement les 3 blocs statistiques :
+Nombre d’utilisateurs
+Garages certifiés
+Avis clients Ne pas les remplacer par autre chose, laisser l’espace propre.
+4. DRAG & DROP DE PHOTOS Ajouter un système de drag & drop pour réorganiser les photos aux endroits suivants :
+Photo de profil client : drag & drop pour changer la photo depuis la galerie
+Garage — Photo de profil/logo : drag & drop pour repositionner
+Garage — Bannière : drag & drop pour repositionner le cadrage de la photo
+Garage — Galerie de crédibilité : drag & drop pour réorganiser l’ordre des photos entre elles Utiliser react-native-draggable-flatlist pour la galerie et react-native-gesture-handler pour les autres.
+5. MESSAGE URGENCE EN VERT Sur la page publique du garage et dans le dashboard, le texte ‘Disponible 24h/24 pour urgence’ doit être affiché en vert #1D7159 avec une icône éclair verte à gauche. Appliquer ce style partout où ce message apparaît dans l’app.
+6. SUPPRESSION PAR BALAYAGE — NOTIFICATIONS Dans l’onglet Notifications, ajouter un système de swipe-to-delete :
+Balayer une notification vers la gauche révèle un bouton rouge ‘Supprimer’
+Appuyer sur ce bouton supprime la notification de la liste et de Supabase
+Utiliser react-native-swipeable ou react-native-gesture-handler pour implémenter ce comportement
+7. SUPPRESSION PAR BALAYAGE — MESSAGES Dans l’écran Messages (liste des conversations), ajouter un système de swipe-to-delete :
+Balayer une conversation vers la gauche révèle un bouton rouge ‘Supprimer’
+Appuyer dessus supprime la conversation de la liste et de Supabase
+Une alerte de confirmation doit s’afficher : ‘Supprimer cette conversation ? Cette action est irréversible.’ avec les boutons ‘Annuler’ et ‘Supprimer’”**

@@ -1,0 +1,1 @@
+{"version":3,"file":"dayHours.d.ts","sourceRoot":"","sources":["../../../src/generated/types/dayHours.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,eAAe,CAAC;AAEjD,MAAM,WAAW,QAAQ;IACvB,GAAG,EAAE,WAAW,CAAC;IACjB,0BAA0B;IAC1B,IAAI,EAAE,MAAM,CAAC;IACb,0BAA0B;IAC1B,KAAK,EAAE,MAAM,CAAC;IACd,MAAM,EAAE,OAAO,CAAC;CACjB"}

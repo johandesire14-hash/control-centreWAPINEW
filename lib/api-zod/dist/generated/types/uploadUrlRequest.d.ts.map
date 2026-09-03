@@ -1,0 +1,1 @@
+{"version":3,"file":"uploadUrlRequest.d.ts","sourceRoot":"","sources":["../../../src/generated/types/uploadUrlRequest.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,gBAAgB;IAC/B,mBAAmB;IACnB,IAAI,EAAE,MAAM,CAAC;IACb,iBAAiB;IACjB,IAAI,EAAE,MAAM,CAAC;IACb,mBAAmB;IACnB,WAAW,EAAE,MAAM,CAAC;CACrB"}

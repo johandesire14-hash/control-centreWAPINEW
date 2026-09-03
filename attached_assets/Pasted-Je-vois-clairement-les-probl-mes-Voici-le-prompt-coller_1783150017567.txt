@@ -1,0 +1,20 @@
+Je vois clairement les problèmes. Voici le prompt à coller dans Replit :
+
+“Corriger complètement le système d’authentification de WapiGarage. Voici les 3 problèmes à régler :
+🔴 PROBLÈME 1 — FAUSSE PAGE DE CONNEXION La page actuelle affiche juste deux boutons ‘Se connecter’ et ‘Créer un compte’ sans aucun formulaire réel. Ce n’est pas une vraie page d’authentification. Remplacer complètement cette page par un vrai système :
+Quand on appuie sur ‘Se connecter’ : afficher un formulaire avec champ Email, champ Mot de passe (avec bouton afficher/masquer), bouton ‘Se connecter’ qui appelle Supabase signInWithPassword, lien ‘Mot de passe oublié’
+Quand on appuie sur ‘Créer un compte’ : afficher un formulaire avec champ Prénom, champ Nom, champ Email, champ Mot de passe avec indicateur de robustesse (Faible rouge / Bien orange / Excellent vert), champ Confirmer le mot de passe, sélection du type de compte (Client ou Garage Pro en boutons toggle), bouton ‘Créer mon compte’ qui appelle Supabase signUp
+🔴 PROBLÈME 2 — PAGE QUI S’OUVRE EN DEHORS DE L’APP L’authentification redirige vers une page externe au lieu de rester dans l’app. Corriger cela :
+Toute l’authentification doit se faire dans l’app sans ouvrir un navigateur externe
+Utiliser les formulaires natifs React Native directement dans l’écran /auth
+Après connexion réussie : fermer l’écran auth et rediriger vers le dashboard correspondant au type de compte sans quitter l’app
+🔴 PROBLÈME 3 — CONNEXION GOOGLE NE FONCTIONNE PAS Corriger la connexion Google complètement :
+Configurer supabase.auth.signInWithOAuth({ provider: 'google' }) correctement
+Utiliser expo-auth-session ou expo-web-browser pour gérer le flux OAuth sans quitter l’app
+Ajouter les URLs de redirection correctes dans Supabase Dashboard → Authentication → URL Configuration : wapigarage://auth/callback et l’URL Replit de l’app
+Ajouter les mêmes URLs dans Google Cloud Console → Identifiants → URI de redirection autorisés
+Après connexion Google réussie : vérifier si l’utilisateur a déjà un profil, sinon lui demander de choisir Client ou Garage Pro avant de le rediriger
+Afficher un message d’erreur clair si la connexion Google échoue
+⚠️ RÈGLE IMPORTANTE Le message actuel ‘WapiGarage utilise une connexion sécurisée Replit : e-mail, Google et plus encore sont proposés directement sur l’écran suivant’ doit être supprimé. C’est une page générée par Replit et non une vraie page d’auth WapiGarage. Tout doit se passer dans l’interface WapiGarage uniquement.”**
+
+Colle ça dans Replit !

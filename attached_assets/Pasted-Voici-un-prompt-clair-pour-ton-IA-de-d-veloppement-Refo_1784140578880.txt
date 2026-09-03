@@ -1,0 +1,156 @@
+Voici un prompt clair pour ton IA de développement :
+
+⸻
+
+🎨 Refonte des interfaces WapiGarage
+
+⚠️ IMPORTANT : WapiGarage doit désormais disposer de deux interfaces distinctes selon le mode utilisé.
+
+⸻
+
+👤 INTERFACE CLIENT
+
+Conserver intégralement l’interface actuelle de l’application.
+
+Ne modifier aucun élément majeur.
+
+Le mode Client reste l’interface principale utilisée par tous les nouveaux utilisateurs.
+
+Fonctionnalités :
+
+Accueil
+Recherche de garages
+Favoris
+Messages
+Rendez-vous
+Profil utilisateur
+
+Barre de navigation actuelle :
+
+Accueil
+Messages
+Favoris
+Rendez-vous
+Profil
+
+⸻
+
+🔧 INTERFACE GARAGE PRO
+
+Créer une interface spécifique aux professionnels.
+
+Le design doit être inspiré du dashboard visible sur la maquette fournie.
+
+Style :
+
+Dark mode
+Cartes statistiques
+Aspect premium
+Couleurs principales :
+Noir
+Gris foncé
+Vert WapiGarage
+
+⸻
+
+Structure du Dashboard Garage
+
+En-tête
+
+Menu hamburger
+Titre Dashboard Garage
+Cloche notifications
+
+⸻
+
+Carte de bienvenue
+
+Bonjour, [Nom du Garage]
+
+Voici un aperçu de votre activité.
+
+⸻
+
+Statistiques
+
+Afficher sous forme de cartes :
+
+Vues du profil
+Note moyenne
+Demandes de devis
+Rendez-vous
+
+⸻
+
+Gestion du garage
+
+Ajouter les sections suivantes :
+
+Informations
+Photos
+Spécialités & services
+Horaires
+Avis reçus
+Consulter les messages
+
+Chaque section doit être affichée sous forme de carte ou d’accordéon moderne.
+
+⸻
+
+Barre de navigation PRO
+
+⚠️ La barre de navigation du mode Garage doit être différente de celle du mode Client.
+
+Utiliser exactement :
+
+Dashboard
+Messages
+Avis
+Profil
+
+❌ Supprimer complètement :
+
+Rendez-vous
+Favoris
+Plus
+Toute icône à trois points
+
+La navigation doit ressembler à celle de la maquette du Dashboard Garage.
+
+⸻
+
+Changement de mode
+
+Lorsqu’un utilisateur possède un garage :
+
+Dans le profil Client afficher :
+
+🔧 Devenir Garage Pro
+
+ou
+
+🔧 Passer en mode Garage
+
+⸻
+
+Dans l’interface Garage afficher :
+
+👤 Revenir en mode Client
+
+Le changement doit être instantané sans déconnexion.
+
+⸻
+
+Résultat attendu
+
+L’application doit fonctionner avec deux expériences visuelles distinctes :
+
+Mode Client
+
+Application de recherche et de mise en relation.
+
+Mode Garage
+
+Tableau de bord professionnel orienté gestion d’activité.
+
+Les deux interfaces doivent partager le même compte utilisateur mais avoir des navigations et écrans adaptés à leur usage.

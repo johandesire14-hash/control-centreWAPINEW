@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "WERywM4bKR74j0VW0aup6"
+uri = "file://artifacts/mobile/assets/images/icon.png"
+type = "image"
+title = "wapigarage app icon"
+
+[[generated]]
+id = "83RmqByDGehapRSZTrh24"
+uri = "file://artifacts/mobile/assets/images/hero-garage.png"
+type = "image"
+title = "garage hero banner"
+
+[[generated]]
+id = "UoD2URGuSqMViCmXCnVO0"
+uri = "file://artifacts/mobile/assets/images/garage-pro.png"
+type = "image"
+title = "garage pro portrait"

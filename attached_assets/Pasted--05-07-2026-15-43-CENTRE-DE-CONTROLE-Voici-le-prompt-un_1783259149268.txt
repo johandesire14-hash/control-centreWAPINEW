@@ -1,0 +1,158 @@
+[05/07/2026 15:43] CENTRE DE CONTROLE: Voici le prompt unifié à coller dans Replit :
+
+“Corriger et implémenter les éléments suivants dans WapiGarage :
+🔴 PROBLÈME 1 — PERMISSION MÉDIATHÈQUE Remplacer le message technique d’Expo par une demande de permission propre en français sur tous les endroits où une photo est uploadée (photo de profil, couverture garage, logo, galerie) :
+const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+if (status !== 'granted') {
+  Alert.alert(
+    'Permission requise',
+    'WapiGarage a besoin d\'accéder à vos photos.',
+    [{ text: 'OK' }]
+  );
+  return;
+}
+🔴 PROBLÈME 2 — BASE DE DONNÉES SUPABASE Exécuter ces migrations dans Supabase :
+-- Table profiles
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  first_name TEXT,
+  last_name TEXT,
+  phone TEXT,
+  avatar_url TEXT,
+  account_type TEXT DEFAULT 'client',
+  onboarding_completed BOOLEAN DEFAULT false,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY 'Lecture publique profils'
+ON profiles FOR SELECT USING (true);
+
+CREATE POLICY 'Modification par propriétaire'
+ON profiles FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY 'Insertion par propriétaire'
+ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Table garages
+CREATE TABLE IF NOT EXISTS garages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  owner_id UUID REFERENCES auth.users(id) NOT NULL,
+  name TEXT NOT NULL,
+  quartier TEXT,
+  address TEXT,
+  phone TEXT,
+  whatsapp TEXT,
+  description TEXT,
+  cover_url TEXT,
+  avatar_url TEXT,
+  is_open BOOLEAN DEFAULT true,
+  is_certified BOOLEAN DEFAULT false,
+  years_experience INTEGER,
+  mechanics_count INTEGER,
+  emergency_available BOOLEAN DEFAULT false,
+  avg_repair_time TEXT,
+  accepted_brands TEXT[],
+  specialties TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE garages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY 'Lecture publique garages'
+ON garages FOR SELECT USING (true);
+
+CREATE POLICY 'Création par propriétaire'
+ON garages FOR INSERT WITH CHECK (auth.uid() = owner_id);
+
+CREATE POLICY 'Modification par propriétaire'
+ON garages FOR UPDATE USING (auth.uid() = owner_id);
+
+-- Trigger création profil automatique
+CREATE OR REPLACE FUNCTION create_profile_on_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, account_type)
+  VALUES (NEW.id, 'client')
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION create_profile_on_signup();
+
+-- Buckets Storage
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('avatars', 'avatars', true),
+       ('covers', 'covers', true),
+       ('gallery', 'gallery', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY 'Upload avatars' ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+
+CREATE POLICY 'Lecture avatars' ON storage.objects
+FOR SELECT USING (bucket_id = 'avatars');
+
+CREATE POLICY 'Upload covers' ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'covers' AND auth.role() = 'authenticated');
+
+CREATE POLICY 'Lecture covers' ON storage.objects
+FOR SELECT USING (bucket_id = 'covers');
+
+CREATE POLICY 'Upload gallery' ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'gallery' AND auth.role() = 'authenticated');
+
+CREATE POLICY 'Lecture gallery' ON storage.objects
+FOR SELECT USING (bucket_id = 'gallery');
+Vérifier que toutes les mises à jour du profil utilisent upsert et non update :
+await supabase.from('profiles').upsert({
+  id: user.id,
+  first_name,
+  last_name,
+  phone,
+  updated_at: new Date()
+});
+Afficher ‘Profil mis à jour avec succès !’ après une sauvegarde réussie.
+🔴 PROBLÈME 3 — ÉCRAN ONBOARDING APRÈS CONNEXION GOOGLE
+Quand un utilisateur se connecte avec Google :
+Vérifier dans profiles si onboarding_completed = true
+Si non → ouvrir l’écran /onboarding
+Si oui → rediriger vers l’accueil /
+Écran /onboarding :
+[05/07/2026 15:43] CENTRE DE CONTROLE: Fond #FAF9F4, logo WapiGarage centré en haut
+Titre : ‘Complétez votre profil’
+Sous-titre : ‘Quelques infos pour personnaliser votre expérience’
+Photo de profil :
+Cercle centré avec icône utilisateur par défaut
+Texte ‘Ajouter une photo’ en dessous
+Appui = sélecteur d’images natif avec permission en français
+Photo uploadée dans bucket avatars Supabase
+Optionnel (pas bloquant)
+Champs :
+Prénom (obligatoire, pré-rempli avec prénom Google si disponible), returnKeyType='next'
+Nom (obligatoire, pré-rempli avec nom Google si disponible), returnKeyType='done'
+Bouton ‘Commencer’ (vert #1D7159, pleine largeur) :
+Vérifie Prénom et Nom remplis
+Si vide : ‘Veuillez renseigner votre prénom et votre nom’
+Si valide :
+await supabase.from('profiles').upsert({
+  id: user.id,
+  first_name: prenom,
+  last_name: nom,
+  avatar_url: photoUrl,
+  onboarding_completed: true,
+  updated_at: new Date()
+});
+Redirige vers /
+Lien ‘Passer cette étape’ en gris en bas :
+Marque onboarding_completed: true et redirige vers /
+Règles :
+Cet écran s’affiche une seule fois par compte
+KeyboardAvoidingView pour que le bouton reste visible quand le clavier est ouvert”**
+
+Colle ça dans Replit, tout est unifié !

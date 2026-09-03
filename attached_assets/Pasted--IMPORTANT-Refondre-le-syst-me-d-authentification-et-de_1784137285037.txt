@@ -1,0 +1,171 @@
+⚠️ IMPORTANT
+
+Refondre le système d'authentification et de navigation afin qu'il n'existe plus qu'un seul type de compte utilisateur.
+
+Supprimer complètement le choix "Client" ou "Garage Pro" sur la page de connexion.
+
+L'expérience doit être la plus simple possible.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+1. OUVERTURE DE L'APPLICATION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Au lancement :
+
+- Afficher le Splash Screen
+- Vérifier la session utilisateur
+
+Si une session existe :
+→ Restaurer automatiquement les données
+→ Rediriger l'utilisateur vers son dernier espace utilisé
+
+Si aucune session n'existe :
+→ Afficher la page de connexion
+
+━━━━━━━━━━━━━━━━━━━━━━━
+2. PAGE DE CONNEXION
+━━━━━━━━━━━━━━━━━━━━━━━
+
+La page doit contenir uniquement :
+
+- Se connecter
+- Créer un compte
+- Continuer avec Google
+
+❌ Ne plus afficher :
+
+- Client
+- Garage Pro
+- Choix de rôle
+
+Tous les utilisateurs créent exactement le même compte.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+3. CRÉATION DE COMPTE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsqu'un utilisateur crée un compte :
+
+Afficher une page de configuration de profil.
+
+Champs obligatoires :
+
+- Prénom
+- Nom
+
+Champ optionnel :
+
+- Photo de profil
+
+Après validation :
+
+→ Créer le profil utilisateur
+→ Rediriger directement vers l'Accueil
+
+━━━━━━━━━━━━━━━━━━━━━━━
+4. UTILISATEUR CONNECTÉ
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Après connexion ou inscription :
+
+→ Arriver sur l'Accueil WapiGarage
+
+L'utilisateur dispose de :
+
+- Recherche de garages
+- Messages
+- Favoris
+- Avis
+- Mon Espace
+
+Il est considéré comme un utilisateur standard.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+5. DEVENIR GARAGE PRO
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Dans la page "Mon Espace", ajouter un bouton :
+
+🔧 Devenir Garage Pro
+
+Lorsqu'il clique :
+
+→ Ouvrir le formulaire de création de garage
+
+━━━━━━━━━━━━━━━━━━━━━━━
+6. FORMULAIRE GARAGE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Formulaire en 5 étapes :
+Une fois terminé :
+
+→ Créer le profil Garage
+→ Associer le garage au compte utilisateur existant
+→ Rediriger vers le Dashboard Garage
+
+━━━━━━━━━━━━━━━━━━━━━━━
+7. DASHBOARD GARAGE
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Le propriétaire du garage retrouve :
+
+- Avis
+- Messages
+- Galerie
+- Horaires
+- Abonnement
+- Gestion du profil
+
+━━━━━━━━━━━━━━━━━━━━━━━
+8. BASCULE ENTRE LES MODES
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Une fois le garage créé :
+
+L'utilisateur possède :
+
+✅ Un profil utilisateur
+
+ET
+
+✅ Un profil garage
+
+Dans Mon Espace afficher :
+
+🔧 Passer en mode Garage
+
+Dans le Dashboard afficher :
+
+👤 Revenir en mode Client
+
+Le changement doit être instantané.
+
+Aucune déconnexion.
+
+Aucune perte de données.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+RÈGLES OBLIGATOIRES
+━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Un seul compte par utilisateur
+
+✅ Plus de choix Client/Garage à la connexion
+
+✅ Tous les nouveaux utilisateurs arrivent sur l'Accueil
+
+✅ Le mode Garage est débloqué via "Devenir Garage Pro"
+
+✅ Un utilisateur peut posséder simultanément :
+   - un profil Client
+   - un profil Garage
+
+✅ Bascule instantanée entre les deux modes
+
+✅ Toutes les données sont restaurées automatiquement à chaque connexion
+
+❌ Ne jamais demander la création d'un second compte
+
+❌ Ne jamais afficher le choix Client/Garage sur la page de connexion
+
+❌ Ne jamais déconnecter l'utilisateur lors du changement de rôle

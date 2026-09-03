@@ -1,0 +1,55 @@
+Voici le prompt à coller dans Replit/Cursor :
+
+“Corriger et implémenter les éléments suivants dans WapiGarage. Ne modifier que les fichiers concernés du projet existant. Ne rien recréer from scratch.
+⚠️ RÈGLE ABSOLUE Chaque correction doit être synchronisée de bout en bout. Toute donnée modifiée doit se refléter partout dans l’app en temps réel.
+🔴 1. ÉCRAN ONBOARDING APRÈS INSCRIPTION Après qu’un nouvel utilisateur crée un compte, afficher obligatoirement un écran d’onboarding avant de le rediriger vers l’accueil :
+Titre : ‘Bienvenue sur WapiGarage’
+Sous-titre : ‘Comment devons-nous vous appeler ?’
+Champ Prénom (obligatoire)
+Champ Nom (obligatoire)
+Bouton ‘Commencer’ (vert #1D7159)
+Sauvegarder dans Supabase : profiles.first_name et profiles.last_name
+Après sauvegarde → rediriger vers l’accueil
+Cet écran ne doit s’afficher qu’une seule fois par compte (ajouter colonne onboarding_completed BOOLEAN DEFAULT false dans la table profiles)
+🔴 2. VÉRIFIER QUE LES DONNÉES VIENNENT DE SUPABASE Vérifier que toutes les données affichées dans l’app viennent bien de Supabase et non de données statiques codées en dur :
+Liste des garages → depuis table garages
+Notes et avis → depuis table reviews
+Statistiques → calculées depuis Supabase
+Si une donnée est encore statique, la remplacer par un fetch Supabase
+🔴 3. SPÉCIALITÉS NE S’AFFICHENT PAS Sur la page publique du garage, les spécialités ne s’affichent pas. Corriger en :
+Vérifiant que la colonne specialties existe dans la table garages
+Récupérant les spécialités dans le fetch de la page publique
+Affichant chaque spécialité en tag/chip arrondi sur la page publique
+Synchronisant avec ce que le pro a sélectionné dans son dashboard
+🔴 4. NOTIFICATIONS DISPARAISSENT APRÈS LECTURE Les notifications doivent être marquées comme lues et disparaître du badge mais rester visibles dans la liste :
+Quand l’utilisateur ouvre la liste des notifications → marquer toutes comme lues (is_read = true)
+Le badge rouge sur la cloche disparaît
+Les notifications restent visibles dans la liste jusqu’à suppression manuelle (swipe)
+Ajouter colonne is_read BOOLEAN DEFAULT false dans la table notifications si elle n’existe pas
+🔴 5. RETIRER UN GARAGE DES FAVORIS Le bouton pour retirer un garage des favoris ne fonctionne pas. Corriger :
+Sur la page publique du garage, le bouton cœur doit toggle entre ajouté/retiré
+Si favori existe → appuyer retire le favori de Supabase et met à jour l’icône immédiatement
+Dans ‘Mes favoris’, bouton ‘Retirer’ doit supprimer de Supabase et retirer de la liste immédiatement
+Synchroniser partout : page publique + liste des favoris
+🔴 6. SUPPRESSION DE COMPTE Ajouter un bouton ‘Supprimer mon compte’ dans les Paramètres :
+Flux :
+L’utilisateur appuie sur ‘Supprimer mon compte’ (rouge)
+Une page s’ouvre avec le titre ‘Pourquoi voulez-vous supprimer votre compte ?’
+Liste de raisons à sélectionner :
+Je n’utilise plus l’app
+J’ai un problème technique
+Je veux créer un nouveau compte
+Autre raison (champ texte libre)
+Une fois une raison sélectionnée, le bouton ‘Supprimer définitivement mon compte’ apparaît en rouge
+L’utilisateur appuie dessus → suppression immédiate sans confirmation supplémentaire
+Ce qui est supprimé :
+Le compte Supabase Auth (supabase.auth.admin.deleteUser)
+Le profil dans la table profiles
+Les conversations et messages
+Les favoris
+Le garage si c’est un pro
+Ce qui est conservé :
+Les avis laissés sur les garages (anonymisés avec ‘Utilisateur supprimé’)
+Après suppression :
+Rediriger vers la page de connexion
+Afficher message : ‘Votre compte a été supprimé avec succès’”**

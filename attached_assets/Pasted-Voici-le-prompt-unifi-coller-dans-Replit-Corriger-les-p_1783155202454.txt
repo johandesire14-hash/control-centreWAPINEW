@@ -1,0 +1,50 @@
+Voici le prompt unifié à coller dans Replit :
+
+“Corriger les problèmes suivants dans WapiGarage :
+🔴 PROBLÈME 1 — CLAVIER QUI CACHE LE BOUTON ‘SUIVANT’ Sur l’écran ‘Devenir Garage Pro’, le bouton ‘Suivant’ est affiché tout en bas de l’écran et devient inaccessible quand le clavier est ouvert :
+Envelopper le contenu de chaque étape dans un KeyboardAvoidingView avec behavior='padding' sur iOS et behavior='height' sur Android
+Envelopper la liste des champs dans un ScrollView avec keyboardShouldPersistTaps='handled'
+Les boutons ‘Annuler’ et ‘Suivant’ doivent être fixes en bas de l’écran avec position: absolute, bottom: 0 et un padding bottom qui respecte la safe area iOS
+Ajouter un TouchableWithoutFeedback wrappant tout l’écran avec Keyboard.dismiss() pour fermer le clavier en appuyant en dehors d’un champ
+Ajouter returnKeyType='next' sur chaque champ pour passer au suivant et returnKeyType='done' sur le dernier champ
+Appliquer ces corrections sur les 5 étapes du formulaire
+🔴 PROBLÈME 2 — ERREUR ‘IMPOSSIBLE DE METTRE À JOUR LE PROFIL’ Dans les Paramètres, quand l’utilisateur essaie de sauvegarder son profil (Prénom, Nom, Téléphone), l’erreur ‘Impossible de mettre à jour le profil’ s’affiche. Ce problème vient de Supabase :
+Vérifier que la table profiles (ou users) existe bien dans Supabase avec les colonnes : id, first_name, last_name, phone, avatar_url, updated_at
+Créer la table via migration si elle n’existe pas :
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  first_name TEXT,
+  last_name TEXT,
+  phone TEXT,
+  avatar_url TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+Ajouter les politiques RLS correctes via migration :
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY 'Lecture publique des profils'
+ON profiles FOR SELECT USING (true);
+
+CREATE POLICY 'Modification par le propriétaire'
+ON profiles FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY 'Insertion par le propriétaire'
+ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+Vérifier que la fonction de mise à jour utilise bien supabase.from('profiles').upsert({ id: user.id, first_name, last_name, phone }) et non un simple update qui échoue si le profil n’existe pas encore
+Créer automatiquement un profil vide dans Supabase dès qu’un utilisateur s’inscrit via un trigger :
+CREATE OR REPLACE FUNCTION create_profile_on_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id)
+  VALUES (NEW.id)
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW EXECUTE FUNCTION create_profile_on_signup();
+Afficher un message de succès ‘Profil mis à jour avec succès !’ quand la sauvegarde fonctionne”**
+
+Colle ça dans Replit !

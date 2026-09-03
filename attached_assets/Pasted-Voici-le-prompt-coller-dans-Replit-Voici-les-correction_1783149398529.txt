@@ -1,0 +1,49 @@
+Voici le prompt à coller dans Replit :
+
+“Voici les corrections urgentes à apporter à WapiGarage :
+🔴 PRIORITÉ 1 — PAGE DE CONNEXION Créer une page de connexion complète et fonctionnelle (/auth) :
+Quand on appuie sur ‘Connexion’ depuis n’importe quel écran, ça ouvre cette page
+Logo WapiGarage centré en haut avec l’icône voiture sur fond vert #1D7159
+Titre : ‘Bienvenue sur WapiGarage’ sous-titre : ‘Le réseau auto de Brazzaville’
+Deux onglets : ‘Se connecter’ et ‘Créer un compte’
+Onglet Se connecter :
+Champ Email avec icône
+Champ Mot de passe avec icône et bouton afficher/masquer
+Lien ‘Mot de passe oublié ?’ qui envoie un email de réinitialisation via Supabase
+Bouton ‘Se connecter’ (vert #1D7159, pleine largeur)
+Séparateur ‘ou continuez avec’
+Bouton ‘Continuer avec Google’ (blanc avec logo Google)
+Lien ‘Pas encore de compte ? Créer un compte’
+Onglet Créer un compte :
+Champ Prénom
+Champ Nom
+Champ Email
+Champ Mot de passe avec indicateur de robustesse en temps réel : Faible (rouge) / Bien (orange) / Excellent (vert)
+Champ Confirmer le mot de passe
+Sélection du type de compte : Client ou Garage Pro (deux boutons toggle avec icône)
+Bouton ‘Créer mon compte’ (vert plein)
+Séparateur ‘ou continuez avec’
+Bouton ‘Continuer avec Google’
+Lien ‘Déjà un compte ? Se connecter’
+Texte en bas : ‘En continuant, vous acceptez nos CGU et notre politique de confidentialité’
+Après connexion/inscription : rediriger vers l’écran correspondant au type de compte
+🔴 PRIORITÉ 2 — CONNEXION GOOGLE Corriger la connexion Google qui ne fonctionne pas :
+Configurer correctement le provider Google OAuth dans Supabase
+Ajouter l’URL de redirection correcte dans la console Google Cloud
+Après connexion Google réussie : vérifier si l’utilisateur a déjà un profil en base, sinon lui demander de choisir son type de compte (Client ou Garage Pro) avant de le rediriger
+Gérer les erreurs : afficher un message clair si la connexion Google échoue
+🔴 PRIORITÉ 3 — SCROLL BLOQUÉ Corriger le problème de scroll sur tous les écrans :
+L’app entière semble statique comme une image, rien ne scroll
+Vérifier que chaque écran utilise bien ScrollView ou FlatList avec les props correctes
+S’assurer qu’aucun élément parent n’a une hauteur fixe qui bloque le scroll
+Vérifier que le contenu sous la bottom bar n’est pas coupé (ajouter un padding bottom égal à la hauteur de la bottom bar)
+Tester le scroll sur l’écran d’accueil, la liste des garages, la page publique d’un garage et le dashboard
+🔴 PRIORITÉ 4 — AFFICHAGE & CADRAGE Corriger les problèmes d’affichage visibles sur la capture d’écran :
+Le titre ‘WapiGara…’ est coupé à droite — corriger le padding horizontal du header
+Le bouton ‘Connexion’ dans le header doit être entièrement visible
+Ajouter un padding horizontal de 16px sur tous les écrans pour que le contenu ne touche pas les bords
+Respecter les safe areas iOS (encoche en haut, barre de navigation en bas)
+La barre de recherche doit être entièrement visible et cliquable
+Les sections ‘Catégories’, ‘Les mieux notés’, ‘Garages certifiés’ doivent scroller normalement”**
+
+Colle ça dans Replit, ça couvre les 4 problèmes urgents !

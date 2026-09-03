@@ -1,0 +1,1564 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: WapiGarage API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: Auth
+    description: Browser and mobile authentication endpoints.
+  - name: Storage
+    description: Object storage upload and serving endpoints.
+  - name: Profile
+    description: Current user profile operations.
+  - name: Stats
+    description: Platform-wide dynamic statistics.
+  - name: Garages
+    description: Garage profiles, search, and management.
+  - name: Photos
+    description: Garage gallery photo management.
+  - name: Reviews
+    description: Garage reviews and ratings.
+  - name: Favorites
+    description: Client favorite garages.
+  - name: Messages
+    description: Conversations and messages between clients and garages.
+  - name: Notifications
+    description: In-app notifications.
+  - name: Certification
+    description: Garage professional certification requests.
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/user:
+    get:
+      tags: [Auth]
+      operationId: getCurrentAuthUser
+      summary: Get the currently authenticated user
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationSessionHeader"
+        - $ref: "#/components/parameters/SessionCookie"
+      responses:
+        "200":
+          description: Auth status resolved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUserEnvelope"
+  /auth/google:
+    get:
+      tags: [Auth]
+      operationId: beginGoogleLogin
+      summary: Start the Google OAuth login flow for mobile
+      parameters:
+        - name: mobile_redirect
+          in: query
+          required: true
+          description: Deep link the server redirects back to once Google sign-in completes.
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect to Google's OAuth consent screen.
+        "400":
+          description: Missing or invalid mobile_redirect parameter.
+        "500":
+          description: Google Sign-In is not configured.
+  /auth/google/callback:
+    get:
+      tags: [Auth]
+      operationId: handleGoogleLoginCallback
+      summary: Complete the Google OAuth login flow
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: error
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect back to the mobile_redirect deep link with a session token, or an error param on failure.
+        "400":
+          description: Missing session, please try signing in again.
+  /mobile-auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutMobileSession
+      summary: Delete a mobile session token
+      parameters:
+        - $ref: "#/components/parameters/AuthorizationSessionHeader"
+      responses:
+        "200":
+          description: Logout processed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutSuccess"
+
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResponse"
+        "400":
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to serve public object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an object entity from PRIVATE_OBJECT_DIR
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          description: Failed to serve object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /profile:
+    get:
+      tags: [Profile]
+      operationId: getMyProfile
+      summary: Get the current user's app profile
+      responses:
+        "200":
+          description: Profile resolved.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    patch:
+      tags: [Profile]
+      operationId: updateMyProfile
+      summary: Update the current user's app profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Profile updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /stats:
+    get:
+      tags: [Stats]
+      operationId: getPlatformStats
+      summary: Get dynamic platform-wide statistics
+      responses:
+        "200":
+          description: Statistics computed from live data.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /garages:
+    get:
+      tags: [Garages]
+      operationId: listGarages
+      summary: Search and list garages
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Search text matched against name and neighborhood.
+        - name: neighborhood
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: specialty
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Specialty"
+        - name: minRating
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: certifiedOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: emergencyOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [rating, reviews, recent]
+      responses:
+        "200":
+          description: List of garages matching the filters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GarageSummary"
+    post:
+      tags: [Garages]
+      operationId: createGarage
+      summary: Create a garage profile for the current user (switches account to Garage Pro)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GarageInput"
+      responses:
+        "201":
+          description: Garage created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Garage"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "409":
+          description: User already owns a garage.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/top-rated:
+    get:
+      tags: [Garages]
+      operationId: listTopRatedGarages
+      summary: Top rated garages for the home screen carousel
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Top rated garages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GarageSummary"
+
+  /garages/certified:
+    get:
+      tags: [Garages]
+      operationId: listCertifiedGarages
+      summary: Certified garages for the home screen carousel
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Certified garages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GarageSummary"
+
+  /garages/mine:
+    get:
+      tags: [Garages]
+      operationId: getMyGarage
+      summary: Get the garage owned by the current user
+      responses:
+        "200":
+          description: The current user's garage, or null if none exists.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Garage"
+                  - type: "null"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/{garageId}:
+    get:
+      tags: [Garages]
+      operationId: getGarage
+      summary: Get a garage's public profile
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      responses:
+        "200":
+          description: Garage profile.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Garage"
+        "404":
+          description: Garage not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    patch:
+      tags: [Garages]
+      operationId: updateGarage
+      summary: Update a garage's profile (owner only)
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GarageUpdate"
+      responses:
+        "200":
+          description: Garage updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Garage"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "403":
+          description: Not the garage owner.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "404":
+          description: Garage not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/{garageId}/photos:
+    get:
+      tags: [Photos]
+      operationId: listGaragePhotos
+      summary: List a garage's gallery photos
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      responses:
+        "200":
+          description: Gallery photos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GaragePhoto"
+    post:
+      tags: [Photos]
+      operationId: addGaragePhoto
+      summary: Add a photo to a garage's gallery (owner only)
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GaragePhotoInput"
+      responses:
+        "201":
+          description: Photo added.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GaragePhoto"
+        "403":
+          description: Not the garage owner.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/{garageId}/photos/{photoId}:
+    delete:
+      tags: [Photos]
+      operationId: deleteGaragePhoto
+      summary: Remove a photo from a garage's gallery (owner only)
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Photo removed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteSuccess"
+        "403":
+          description: Not the garage owner.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/{garageId}/reviews:
+    get:
+      tags: [Reviews]
+      operationId: listGarageReviews
+      summary: List reviews for a garage
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      responses:
+        "200":
+          description: Reviews for the garage.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      tags: [Reviews]
+      operationId: createGarageReview
+      summary: Leave a review for a garage (authenticated clients only)
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /favorites:
+    get:
+      tags: [Favorites]
+      operationId: listMyFavorites
+      summary: List the current user's favorite garages
+      responses:
+        "200":
+          description: Favorite garages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GarageSummary"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /garages/{garageId}/favorite:
+    post:
+      tags: [Favorites]
+      operationId: addFavorite
+      summary: Add a garage to the current user's favorites
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      responses:
+        "201":
+          description: Favorite added.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteStatus"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    delete:
+      tags: [Favorites]
+      operationId: removeFavorite
+      summary: Remove a garage from the current user's favorites
+      parameters:
+        - $ref: "#/components/parameters/GarageIdParam"
+      responses:
+        "200":
+          description: Favorite removed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteStatus"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /conversations:
+    get:
+      tags: [Messages]
+      operationId: listConversations
+      summary: List the current user's conversations
+      responses:
+        "200":
+          description: Conversations sorted by most recent activity.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      tags: [Messages]
+      operationId: startConversation
+      summary: Start (or reuse) a conversation with a garage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "200":
+          description: Existing or newly created conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /conversations/{conversationId}/messages:
+    get:
+      tags: [Messages]
+      operationId: listMessages
+      summary: List messages in a conversation
+      parameters:
+        - $ref: "#/components/parameters/ConversationIdParam"
+      responses:
+        "200":
+          description: Messages ordered oldest to newest.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "403":
+          description: Not a participant in this conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      tags: [Messages]
+      operationId: sendMessage
+      summary: Send a message in a conversation
+      parameters:
+        - $ref: "#/components/parameters/ConversationIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Message sent.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "403":
+          description: Not a participant in this conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /conversations/{conversationId}/read:
+    patch:
+      tags: [Messages]
+      operationId: markConversationRead
+      summary: Mark all messages in a conversation as read
+      parameters:
+        - $ref: "#/components/parameters/ConversationIdParam"
+      responses:
+        "200":
+          description: Conversation marked as read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "403":
+          description: Not a participant in this conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      operationId: listNotifications
+      summary: List the current user's notifications
+      parameters:
+        - name: target
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/NotificationTarget"
+      responses:
+        "200":
+          description: Notifications ordered newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /notifications/{notificationId}/read:
+    patch:
+      tags: [Notifications]
+      operationId: markNotificationRead
+      summary: Mark a single notification as read
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notification marked as read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /notifications/read-all:
+    patch:
+      tags: [Notifications]
+      operationId: markAllNotificationsRead
+      summary: Mark all of the current user's notifications as read
+      parameters:
+        - name: target
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/NotificationTarget"
+      responses:
+        "200":
+          description: All notifications marked as read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteSuccess"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /certification-requests:
+    post:
+      tags: [Certification]
+      operationId: createCertificationRequest
+      summary: Submit a professional certification request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificationRequestInput"
+      responses:
+        "201":
+          description: Certification request submitted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificationRequest"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+  /certification-requests/mine:
+    get:
+      tags: [Certification]
+      operationId: listMyCertificationRequests
+      summary: List the current user's certification requests
+      responses:
+        "200":
+          description: Certification requests ordered newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CertificationRequest"
+        "401":
+          description: Not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+
+components:
+  parameters:
+    AuthorizationSessionHeader:
+      name: Authorization
+      in: header
+      required: false
+      description: Opaque session token — `Bearer <sid>`.
+      schema:
+        type: string
+    SessionCookie:
+      name: sid
+      in: cookie
+      required: false
+      description: Browser session cookie.
+      schema:
+        type: string
+    GarageIdParam:
+      name: garageId
+      in: path
+      required: true
+      schema:
+        type: integer
+    ConversationIdParam:
+      name: conversationId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    AuthUser:
+      type: object
+      required: [id, email, firstName, lastName, profileImageUrl]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, "null"]
+          format: email
+        firstName:
+          type: [string, "null"]
+        lastName:
+          type: [string, "null"]
+        profileImageUrl:
+          type: [string, "null"]
+    AuthUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          oneOf:
+            - $ref: "#/components/schemas/AuthUser"
+            - type: "null"
+    LogoutSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    DeleteSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        size:
+          type: integer
+          minimum: 1
+        contentType:
+          type: string
+          minLength: 1
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+          format: uri
+        objectPath:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/UploadUrlRequest"
+
+    AccountType:
+      type: string
+      enum: [client, garage_pro]
+
+    Specialty:
+      type: string
+      enum:
+        - moteur
+        - carrosserie
+        - electrique
+        - climatisation
+        - transmission
+        - freins
+        - suspension
+        - pneus
+        - geometrie
+        - depannage_urgence
+        - vidange_revision
+        - diagnostic_electronique
+        - batterie_alternateur
+        - vitrage_pare_brise
+        - echappement_antipollution
+        - lavage_detailing
+        - cles_antidemarrage
+        - injection_carburation
+
+    RepairDelay:
+      type: string
+      enum:
+        - moins_1h
+        - 1_3h
+        - 3_6h
+        - 1_jour
+        - plusieurs_jours
+
+    DayHours:
+      type: object
+      required: [day, open, close, closed]
+      properties:
+        day:
+          type: string
+          enum: [lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche]
+        open:
+          type: string
+          description: "Opening time, HH:mm"
+        close:
+          type: string
+          description: "Closing time, HH:mm"
+        closed:
+          type: boolean
+
+    Profile:
+      type: object
+      required:
+        [id, email, firstName, lastName, profileImageUrl, phone, accountType, hasGarage]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, "null"]
+        firstName:
+          type: [string, "null"]
+        lastName:
+          type: [string, "null"]
+        profileImageUrl:
+          type: [string, "null"]
+        phone:
+          type: [string, "null"]
+        accountType:
+          $ref: "#/components/schemas/AccountType"
+        hasGarage:
+          type: boolean
+    ProfileUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        profileImageUrl:
+          type: string
+        accountType:
+          $ref: "#/components/schemas/AccountType"
+
+    PlatformStats:
+      type: object
+      required: [certifiedGarageCount, totalReviewCount, totalUserCount]
+      properties:
+        certifiedGarageCount:
+          type: integer
+        totalReviewCount:
+          type: integer
+        totalUserCount:
+          type: integer
+
+    GarageSummary:
+      type: object
+      required:
+        [
+          id,
+          ownerId,
+          name,
+          neighborhood,
+          coverImageUrl,
+          avatarImageUrl,
+          certified,
+          specialties,
+          averageRating,
+          reviewCount,
+          trustScore,
+          emergencyAvailable,
+          isFavorite,
+        ]
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: string
+        name:
+          type: string
+        neighborhood:
+          type: string
+        coverImageUrl:
+          type: [string, "null"]
+        avatarImageUrl:
+          type: [string, "null"]
+        certified:
+          type: boolean
+        specialties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Specialty"
+        averageRating:
+          type: number
+        reviewCount:
+          type: integer
+        trustScore:
+          type: integer
+        emergencyAvailable:
+          type: boolean
+        isFavorite:
+          type: boolean
+
+    Garage:
+      type: object
+      required:
+        [
+          id,
+          ownerId,
+          name,
+          neighborhood,
+          address,
+          phone,
+          whatsapp,
+          description,
+          coverImageUrl,
+          avatarImageUrl,
+          certified,
+          specialties,
+          emergencyAvailable,
+          averageRepairDelay,
+          yearsExperience,
+          mechanicsCount,
+          acceptedBrands,
+          openingHours,
+          averageRating,
+          reviewCount,
+          trustScore,
+          trustQuality,
+          trustHonesty,
+          trustPunctuality,
+          trustValue,
+          isFavorite,
+          profileCompletion,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: string
+        name:
+          type: string
+        neighborhood:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        whatsapp:
+          type: [string, "null"]
+        description:
+          type: [string, "null"]
+        coverImageUrl:
+          type: [string, "null"]
+        avatarImageUrl:
+          type: [string, "null"]
+        certified:
+          type: boolean
+        specialties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Specialty"
+        emergencyAvailable:
+          type: boolean
+        averageRepairDelay:
+          $ref: "#/components/schemas/RepairDelay"
+        yearsExperience:
+          type: integer
+        mechanicsCount:
+          type: integer
+        acceptedBrands:
+          type: array
+          items:
+            type: string
+        openingHours:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayHours"
+        averageRating:
+          type: number
+        reviewCount:
+          type: integer
+        trustScore:
+          type: integer
+        trustQuality:
+          type: integer
+        trustHonesty:
+          type: integer
+        trustPunctuality:
+          type: integer
+        trustValue:
+          type: integer
+        isFavorite:
+          type: boolean
+        profileCompletion:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    GarageInput:
+      type: object
+      required: [name, neighborhood, address, phone, specialties]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        neighborhood:
+          type: string
+          minLength: 1
+        address:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        whatsapp:
+          type: string
+        description:
+          type: string
+        coverImageUrl:
+          type: string
+        avatarImageUrl:
+          type: string
+        specialties:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Specialty"
+        emergencyAvailable:
+          type: boolean
+        averageRepairDelay:
+          $ref: "#/components/schemas/RepairDelay"
+        yearsExperience:
+          type: integer
+        mechanicsCount:
+          type: integer
+        acceptedBrands:
+          type: array
+          items:
+            type: string
+        openingHours:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayHours"
+        galleryImageUrls:
+          type: array
+          items:
+            type: string
+
+    GarageUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        neighborhood:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        whatsapp:
+          type: string
+        description:
+          type: string
+        coverImageUrl:
+          type: string
+        avatarImageUrl:
+          type: string
+        specialties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Specialty"
+        emergencyAvailable:
+          type: boolean
+        averageRepairDelay:
+          $ref: "#/components/schemas/RepairDelay"
+        yearsExperience:
+          type: integer
+        mechanicsCount:
+          type: integer
+        acceptedBrands:
+          type: array
+          items:
+            type: string
+        openingHours:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayHours"
+
+    GaragePhoto:
+      type: object
+      required: [id, garageId, url, createdAt]
+      properties:
+        id:
+          type: integer
+        garageId:
+          type: integer
+        url:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    GaragePhotoInput:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          minLength: 1
+
+    Review:
+      type: object
+      required:
+        [
+          id,
+          garageId,
+          userId,
+          userName,
+          userProfileImageUrl,
+          rating,
+          comment,
+          qualityRating,
+          honestyRating,
+          punctualityRating,
+          valueRating,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        garageId:
+          type: integer
+        userId:
+          type: string
+        userName:
+          type: string
+        userProfileImageUrl:
+          type: [string, "null"]
+        rating:
+          type: integer
+        comment:
+          type: [string, "null"]
+        qualityRating:
+          type: integer
+        honestyRating:
+          type: integer
+        punctualityRating:
+          type: integer
+        valueRating:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ReviewInput:
+      type: object
+      required: [rating, qualityRating, honestyRating, punctualityRating, valueRating]
+      properties:
+        invoiceId:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        qualityRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        honestyRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        punctualityRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        valueRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+
+    FavoriteStatus:
+      type: object
+      required: [garageId, isFavorite]
+      properties:
+        garageId:
+          type: integer
+        isFavorite:
+          type: boolean
+
+    ConversationInput:
+      type: object
+      required: [garageId]
+      properties:
+        garageId:
+          type: integer
+
+    Conversation:
+      type: object
+      required:
+        [
+          id,
+          garageId,
+          garageName,
+          garageAvatarImageUrl,
+          clientId,
+          clientName,
+          clientProfileImageUrl,
+          lastMessage,
+          lastMessageAt,
+          unreadCount,
+        ]
+      properties:
+        id:
+          type: integer
+        garageId:
+          type: integer
+        garageName:
+          type: string
+        garageAvatarImageUrl:
+          type: [string, "null"]
+        clientId:
+          type: string
+        clientName:
+          type: string
+        clientProfileImageUrl:
+          type: [string, "null"]
+        lastMessage:
+          type: [string, "null"]
+        lastMessageAt:
+          type: [string, "null"]
+          format: date-time
+        unreadCount:
+          type: integer
+
+    MessageType:
+      type: string
+      enum: [text, quote_request, appointment_request]
+
+    Message:
+      type: object
+      required: [id, conversationId, senderId, type, content, createdAt, readAt]
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        senderId:
+          type: string
+        type:
+          $ref: "#/components/schemas/MessageType"
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        readAt:
+          type: [string, "null"]
+          format: date-time
+
+    MessageInput:
+      type: object
+      required: [type, content]
+      properties:
+        type:
+          $ref: "#/components/schemas/MessageType"
+        content:
+          type: string
+          minLength: 1
+
+    NotificationType:
+      type: string
+      enum: [message, review, favorite]
+
+    NotificationTarget:
+      type: string
+      enum: [client, pro]
+
+    Notification:
+      type: object
+      required: [id, type, target, content, relatedId, read, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          $ref: "#/components/schemas/NotificationType"
+        target:
+          $ref: "#/components/schemas/NotificationTarget"
+        content:
+          type: string
+        relatedId:
+          type: [integer, "null"]
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CertificationStatus:
+      type: string
+      enum: [pending, approved, rejected]
+
+    CertificationRequestInput:
+      type: object
+      required: [documentUrls]
+      properties:
+        documentUrls:
+          type: array
+          minItems: 1
+          items:
+            type: string
+
+    CertificationRequest:
+      type: object
+      required: [id, status, documentUrls, createdAt]
+      properties:
+        id:
+          type: integer
+        status:
+          $ref: "#/components/schemas/CertificationStatus"
+        documentUrls:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time

@@ -1,0 +1,78 @@
+Je veux modifier la gestion des images de mon application mobile Expo/React Native.
+
+Actuellement, l'application charge directement les images depuis le stockage distant (Supabase Storage probablement). Sur Android, certaines photos ne s'affichent pas correctement.
+
+Je veux mettre en place une couche intermédiaire côté serveur pour sécuriser et fiabiliser le chargement des images.
+
+Objectif :
+
+* L'application mobile ne doit plus charger directement les URLs Supabase Storage.
+* Elle doit appeler mon API backend.
+* Le backend récupère l'image depuis le stockage distant.
+* Le backend renvoie une URL propre ou un flux d'image compatible Android/iOS.
+
+Architecture souhaitée :
+
+Mobile Expo
+→ API backend (/api/images/...)
+→ Supabase Storage
+→ retour image optimisée
+
+Contraintes :
+
+* Ne pas utiliser EAS.
+* Ne pas changer la structure globale du projet.
+* Conserver Expo Router.
+* Conserver Supabase pour le stockage.
+* Ne pas casser les fonctionnalités existantes.
+
+À implémenter :
+
+1. Créer une route API dédiée aux images :
+   Exemple :
+   GET /api/images/:path
+
+2. Cette route doit :
+
+   * vérifier que l'image existe ;
+   * récupérer l'image depuis Supabase Storage ;
+   * gérer les erreurs proprement ;
+   * renvoyer les bons headers HTTP :
+
+     * Content-Type correct (image/jpeg, image/png, image/webp...)
+     * Cache-Control pour optimiser les performances.
+
+3. Ajouter une fonction côté mobile :
+   Exemple :
+   getImageUrl(path)
+   qui transforme automatiquement :
+   ancienne URL Supabase
+   →
+   nouvelle URL API.
+
+4. Remplacer progressivement les affichages :
+   Avant :
+   <Image source={{uri: supabaseUrl}} />
+
+   Après :
+   <Image source={{uri: getImageUrl(path)}} />
+
+5. Ajouter un fallback :
+
+   * si l'image échoue, afficher une image par défaut ;
+   * éviter les écrans vides.
+
+6. Ajouter des logs temporaires pour identifier :
+
+   * URL demandée ;
+   * erreur Supabase ;
+   * erreur réseau Android.
+
+Avant de modifier le code :
+
+* analyse où les images sont actuellement chargées ;
+* identifie tous les fichiers concernés ;
+* propose un plan de modification ;
+* puis applique les changements.
+
+Ne modifie pas les autres fonctionnalités de l'application.

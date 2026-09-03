@@ -1,0 +1,95 @@
+modules = ["nodejs-20", "web"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/api-server: API Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/mobile: expo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "🔧 Setup Check"
+
+[[workflows.workflow]]
+name = "artifacts/api-server: API Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=8080 pnpm --filter @workspace/api-server run dev"
+waitForPort = 8080
+
+[[workflows.workflow]]
+name = "artifacts/mobile: expo"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=18115 pnpm --filter @workspace/mobile run dev"
+waitForPort = 18115
+
+[[workflows.workflow]]
+name = "🔧 Setup Check"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/setup-check.sh"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+packages = ["nano", "psmisc", "try"]
+
+[userenv]
+
+[userenv.shared]
+EXPO_PUBLIC_SUPABASE_URL = "https://rljiaxrwhaffgdvygdvy.supabase.co"
+EXPO_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsamlheHJ3aGFmZGR2eWd2eHkiLCJpYXQiOjE3ODQxMTk4MTksImV4cCI6MjA5OTY5NTgxOX0.0A27DaJH5z5XiT0x2Sb92IeUUh6oPQ5Z7biCoCHmpLA"
+EXPO_PUBLIC_API_DOMAIN = "6c2221bd-c94a-4551-a181-36ee1b366c83-00-2nn64jxbrnxn0.archer.replit.dev"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 18115
+externalPort = 3000

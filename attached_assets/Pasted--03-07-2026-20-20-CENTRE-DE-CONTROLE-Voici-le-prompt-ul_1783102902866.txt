@@ -1,0 +1,253 @@
+[03/07/2026 20:20] CENTRE DE CONTROLE: Voici le prompt ultime pour Replit :
+
+“Crée WapiGarage, une application mobile iOS et Android de mise en relation entre clients automobilistes et garages professionnels à Brazzaville, République du Congo.
+Stack technique : React Native + Expo, Supabase (auth, base de données, storage, realtime). Langue : Française uniquement. Design : inspiré d’Airbnb — moderne, épuré, photos en avant-plan, beaucoup d’espace blanc. Icônes : Lucide React Native exclusivement.
+
+🎨 CHARTE GRAPHIQUE
+Vert principal : #1D7159 → boutons, icônes actives, badges, éléments de confiance
+Blanc cassé : #FAF9F4 → fond principal de toutes les pages
+Gris-vert doux : #C6D1D0 → cartes, séparateurs, bordures
+Blanc : #FCFCFC → fond des cartes
+Texte principal : #0a0a0a
+Texte secondaire : #6b7280
+Typographie : Inter — Bold pour titres, SemiBold pour sous-titres, Regular pour corps
+Border-radius : 16px pour les cartes, 12px pour les boutons
+Ombres légères sur toutes les cartes
+
+⚠️ RÈGLES ABSOLUES
+Toutes les données (notes, avis, statistiques, nombres) récupérées en temps réel depuis Supabase. Aucune valeur codée en dur
+Si une donnée est vide ou à 0, afficher un état vide propre
+Notes et étoiles reflètent la moyenne réelle des avis en base
+Politiques RLS Supabase configurées via migrations
+Données publiques (profils garages, avis, galeries) lisibles sans être connecté
+Données privées (messages, dashboards) accessibles uniquement par le propriétaire
+Buckets Storage (photos, avatars, bannières, galeries) en accès public en lecture
+Fonction has_role avec SECURITY DEFINER et permissions EXECUTE pour authenticated et anon
+
+👤 TYPES D’UTILISATEURS 2 types de comptes uniquement :
+Client : recherche des garages, laisse des avis, envoie des messages, gère ses favoris
+Garage Pro : gère son profil garage, reçoit messages et demandes
+
+📱 NAVIGATION PRINCIPALE Bottom tab bar avec 4 onglets :
+🏠 Accueil
+🔍 Recherche
+💬 Messages
+👤 Mon Espace
+
+🏠 ÉCRAN D’ACCUEIL (/)
+Header avec logo WapiGarage et icône cloche notifications (badge rouge si non lues)
+Grande barre de recherche arrondie : ‘Rechercher un garage…’
+Statistiques dynamiques depuis Supabase : nombre de garages certifiés, nombre d’avis total, nombre d’utilisateurs
+Section ‘Garages les mieux notés’ : carrousel horizontal style Airbnb avec grande photo, nom, quartier, étoiles, note, nombre d’avis
+Section ‘Comment ça marche’ : 3 étapes client + 3 étapes pro avec icônes
+Section ‘Garages certifiés’ : carrousel horizontal
+
+🔐 AUTHENTIFICATION (/auth)
+Accessible quand on appuie sur ‘Mon Espace’ ou ‘Se connecter’ sans être connecté
+Deux onglets : ‘Se connecter’ et ‘Créer un compte’
+Logo WapiGarage centré en haut
+Connexion via : Email + mot de passe, Google OAuth
+SMS OTP affiché comme option mais avec message : ‘Disponible prochainement pour les numéros +242’
+Indicateur de robustesse du mot de passe : Faible (rouge) / Bien (orange) / Excellent (vert) basé sur longueur, chiffres, majuscules, caractères spéciaux
+Lien ‘Mot de passe oublié’ : envoi email de réinitialisation
+Lors de la création de compte : choisir entre Client ou Garage Pro
+Après connexion : rediriger selon le type de compte
+
+🔄 SWITCH CLIENT / PRO
+Depuis Mon Espace, bouton ‘Passer en mode Pro’
+Si l’utilisateur n’a pas encore de garage : lancer le formulaire de création en 5 étapes
+Si l’utilisateur a déjà un garage : basculer directement vers le dashboard garage
+L’interface change complètement selon le mode actif
+
+📋 ONBOARDING CRÉATION GARAGE (5 ÉTAPES) Barre de progression en haut à chaque étape. Bouton ‘Retour’ disponible. Données sauvegardées temporairement entre les étapes.
+Étape 1 — Informations de base
+Nom du garage (obligatoire)
+Quartier (obligatoire)
+Adresse exacte (obligatoire)
+Numéro de téléphone (obligatoire)
+Numéro WhatsApp (optionnel)
+Description / Présentation (optionnel)
+Bouton ‘Suivant’
+Étape 2 — Services & Spécialités
+Sélection multiple en boutons toggle : Moteur, Carrosserie, Électrique, Climatisation, Transmission, Freins, Suspension, Pneus, Géométrie, Dépannage d’urgence
+Au moins 1 service obligatoire
+[03/07/2026 20:20] CENTRE DE CONTROLE: Toggle disponibilité dépannage d’urgence (oui/non)
+Sélecteur délai moyen de réparation : moins d’1h / 1-3h / 3-6h / 1 jour / plusieurs jours
+Bouton ‘Suivant’
+Étape 3 — Photos
+Upload photo de couverture/bannière (obligatoire)
+Upload logo/avatar (optionnel)
+Galerie de crédibilité : jusqu’à 5 photos pour commencer (optionnel)
+Toutes uploadées dans Supabase Storage
+Bouton ‘Suivant’
+Étape 4 — Horaires
+Lundi au Dimanche : heure ouverture, heure fermeture, case ‘Fermé ce jour’
+Par défaut : 08:00-18:00 lundi-samedi, fermé dimanche
+Bouton ‘Suivant’
+Étape 5 — Récapitulatif
+Résumé complet : nom, adresse, services, photos, horaires
+Bouton ‘Modifier’ sur chaque section
+Bouton ‘Créer mon garage’
+Après confirmation : créer en Supabase, basculer en mode Pro, rediriger vers dashboard avec message ‘Votre garage a été créé avec succès !’
+
+🔍 ÉCRAN RECHERCHE (/recherche)
+Barre de recherche par nom ou quartier
+Filtres fonctionnels (pas statiques) en chips horizontaux scrollables : par quartier, par spécialité, par note minimale, certifiés uniquement, disponible urgence
+Tri : Mieux notés / Plus proches / Plus d’avis
+Nombre de résultats affiché dynamiquement
+Chaque carte garage style Airbnb :
+Grande photo de couverture en haut
+Logo/avatar en cercle superposé en bas à gauche de la photo
+Icône cœur en haut à droite pour favoris
+Nom, quartier, badge Certifié si applicable
+Étoiles + note (ex: 4.9) + nombre d’avis
+Spécialités en tags
+Score de fiabilité avec barre de progression
+Bouton ‘Voir le profil’
+
+📄 PAGE PUBLIQUE GARAGE (/garage/[id])
+Photo de couverture pleine largeur en bannière
+Logo/avatar en cercle superposé en bas à gauche de la bannière
+Nom du garage en grand
+Badges : Certifié (si applicable) + Ouvert/Fermé
+Localisation
+Étoiles + note moyenne (ex: 4.3) + nombre d’avis dynamique
+Boutons : ‘Contacter’ (vert plein), ‘Appeler’ (bordure), ‘Favori’ (cœur toggle)
+Tags spécialités horizontaux scrollables
+3 onglets : Informations / Avis / Galerie
+Onglet Informations :
+Spécialités & services
+Délai moyen de réparation
+Années d’expérience
+Nombre de mécaniciens
+Disponibilité dépannage d’urgence
+Marques acceptées
+Horaires d’ouverture jour par jour
+Adresse exacte
+Téléphone & WhatsApp
+Onglet Avis :
+Note moyenne globale + détail par critère
+Liste des avis : photo client, nom, étoiles, commentaire, date
+Bouton ‘Laisser un avis’ si connecté en tant que client
+Si non connecté : ‘Connectez-vous pour laisser un avis’ → lien vers /auth
+Formulaire d’avis : note 1 à 5 étoiles, commentaire, bouton Envoyer
+Note moyenne recalculée automatiquement après chaque avis
+Onglet Galerie :
+Photos en grille 2 colonnes
+Appui sur photo = lightbox plein écran avec navigation gauche/droite
+Score de fiabilité :
+Score global /100
+Détail : Qualité, Honnêteté, Ponctualité, Rapport qualité-prix
+Toutes les valeurs dynamiques depuis Supabase
+
+💬 ÉCRAN MESSAGES (/messages)
+Accessible depuis bottom bar (icône bulle)
+Liste des conversations : photo/avatar du garage, nom, dernier message, heure, badge non lu
+Appui sur une conversation ouvre le fil de discussion
+Fil de discussion en temps réel via Supabase realtime
+Bouton ‘Nouvelle conversation’ pour démarrer un chat
+Dans chaque conversation : boutons ‘Demander un devis’ et ‘Prendre un rendez-vous’ qui envoient un message structuré dans le fil
+Quand on appuie sur ‘Contacter’ depuis la page d’un garage : créer automatiquement une conversation et ouvrir cet écran avec la conversation active. Si conversation existante, ouvrir l’existante sans doublon
+Si non connecté et on appuie ‘Contacter’ : rediriger vers /auth avec message ‘Connectez-vous pour contacter ce garage’
+
+🔔 NOTIFICATIONS
+Icône cloche dans le header avec badge rouge (nombre de non lues)
+Appui sur cloche = liste des notifications
+Types : nouveau message reçu, nouvel avis, nouveau favori
+Chaque notification : icône type, contenu, date, lien vers l’écran concerné
+Badge disparaît une fois les notifications lues
+Temps réel via Supabase realtime
+
+👤 MON ESPACE — CLIENT (/mon-espace)
+[03/07/2026 20:20] CENTRE DE CONTROLE: Photo de profil en cercle en haut (appuyer pour modifier depuis galerie ou appareil photo, uploadée dans Supabase Storage)
+Nom et email de l’utilisateur
+Switch ‘Passer en mode Pro’
+Section MES ACTIVITÉS :
+Mes rendez-vous
+Mes véhicules
+Mes favoris (liste des garages avec bouton retirer)
+Historique d’entretien
+Section COMPTE & ASSISTANCE :
+Paramètres
+Mon abonnement
+À propos
+Confidentialité
+Nous contacter
+Se déconnecter (rouge)
+Version de l’app en bas : WapiGarage v2.1.0
+
+🔧 DASHBOARD GARAGE PRO (/dashboard-garage)
+Switch ‘Repasser en mode Client’ en haut
+4 cartes statistiques dynamiques : Vues ce mois, Note moyenne (étoiles), Avis reçus, Messages non lus
+Barre de complétion du profil (% calculé dynamiquement selon les champs remplis)
+4 onglets : Mon profil / Avis / Messages / Abonnement
+Onglet Mon profil :
+Photo de couverture cliquable avec bouton ‘Modifier’ (upload Supabase Storage)
+Logo/avatar cliquable avec bouton ‘Téléverser’ (upload Supabase Storage)
+Champs : Nom du garage, Quartier, Adresse exacte, Téléphone, WhatsApp, Description
+Horaires par jour (Lundi-Dimanche) : heure ouverture, heure fermeture, case ‘Fermé’
+Spécialités : boutons toggle sélectionnables
+Galerie crédibilité : grille avec bouton ‘+’ (max 10 photos), croix pour supprimer
+Années d’expérience, Nombre de mécaniciens, Marques acceptées, Disponibilité urgence
+Bouton ‘Enregistrer les modifications’
+Bouton ‘Voir mon profil public’
+Onglet Avis :
+Liste des avis reçus : photo client, nom, étoiles, commentaire, date
+Note moyenne dynamique
+Onglet Messages :
+Redirige vers /messages filtré sur les conversations du garage
+Onglet Abonnement :
+Plan actuel : Gratuit
+Offres premium : Starter / Pro / Business avec fonctionnalités et prix
+
+🏅 CERTIFICATION PRO (/certification)
+Accessible depuis Mon Espace → ‘Devenir professionnel certifié’
+Upload de documents : Pièce d’identité, Diplôme ou certificat pro, Permis de conduire, Autres documents
+Envoi automatique par email à contact@wapigarage.com
+Message de confirmation : ‘Votre demande est en cours d’examen, nous vous contacterons sous 48h’
+Ce flux ne supprime jamais le garage existant du compte
+
+⚙️ PARAMÈTRES (/settings)
+3 onglets : Compte / Préférences / Support
+Compte :
+Informations personnelles (nom, prénom, email, téléphone, photo de profil)
+Sécurité (mot de passe avec indicateur Faible/Bien/Excellent, vérification 2 étapes)
+Adresses (ajouter, modifier, supprimer)
+Moyens de paiement (cartes, mobile money Airtel/MTN)
+Préférences :
+Notifications (toggles push, email, SMS)
+Langue (Français par défaut)
+Thème (Clair / Sombre / Automatique)
+Unités de mesure (Métrique par défaut)
+Support :
+Centre d’aide FAQ
+Nous contacter (formulaire → contact@wapigarage.com)
+À propos : version 2.1.0, description, liens CGU et confidentialité
+
+📄 PAGE À PROPOS (/a-propos)
+Histoire : WapiGarage est né du constat qu’il est difficile de trouver un garage fiable à Brazzaville
+Mission : Connecter chaque automobiliste congolais aux meilleurs garages rapidement et en toute confiance
+Vision : Devenir la référence de la mécanique automobile à Brazzaville puis en Afrique centrale
+Valeurs : Fiabilité, Transparence, Proximité
+Comment ça marche : 3 étapes client + 3 étapes pro
+Modèle : gratuit pour tous, fonctionnalités avancées en premium
+Contact : contact@wapigarage.com — Brazzaville, République du Congo
+
+📄 PAGE CONFIDENTIALITÉ (/confidentialite)
+Données collectées : nom, email, téléphone, localisation, photos, messages, données de connexion
+Pourquoi : création de compte, mise en relation, amélioration du service, notifications
+Stockage : Supabase, serveurs sécurisés
+Partage : aucune vente de données à des tiers
+Droits : accès, modification, suppression depuis les paramètres
+Conservation : données supprimées dans les 30 jours après suppression du compte
+Contact : privacy@wapigarage.com
+
+🔒 SUPABASE — CONFIGURATION RLS
+Toutes les tables avec politiques RLS via migrations
+Tables publiques (SELECT sans auth) : garages, garage_photos, reviews, garage_services, garage_hours
+[03/07/2026 20:20] CENTRE DE CONTROLE: Tables privées (auth requise) : messages, conversations, notifications, user_profiles
+Buckets Storage publics en lecture : covers, avatars, gallery
+Buckets Storage privés : documents-certification
+Fonction has_role avec SECURITY DEFINER et GRANT EXECUTE à authenticated et anon”**
+
+C’est le prompt le plus complet. Colle-le dans Replit en une seule fois !

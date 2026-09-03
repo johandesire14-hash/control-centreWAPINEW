@@ -1,0 +1,29 @@
+Modifier le flux de navigation de WapiGarage en te référant au code existant du projet GitHub. Ne recrée rien from scratch. Ne propose pas d’alternative, applique exactement ce qui est décrit ci-dessous.
+⛔️ RÈGLES STRICTES
+Ne pas modifier ce qui n’est pas mentionné dans ce prompt
+Ne pas simplifier le flux décrit
+Ne pas remplacer la logique par une autre approche
+Appliquer chaque point exactement comme décrit, dans l’ordre
+Si un fichier existant doit être modifié, le modifier directement sans en créer un nouveau
+🔴 FLUX DE NAVIGATION OBLIGATOIRE
+1. Écran de démarrage — OBLIGATOIRE La toute première page affichée au lancement de l’app doit TOUJOURS être la page de connexion/création de compte. Pas l’accueil, pas un splash screen, pas une autre page. Uniquement la page de connexion. Cette page doit avoir un bouton ‘Ignorer’ placé en haut à droite, texte gris clair, sans fond.
+2. Mode visiteur — OBLIGATOIRE Quand l’utilisateur appuie sur ‘Ignorer’, il accède à l’app en mode visiteur avec ces restrictions strictes :
+✅ Autorisé : voir la liste des garages, voir les profils publics des garages
+❌ Interdit : envoyer un message, laisser un avis, accéder aux paramètres, voir un profil personnel
+Les onglets Messages et Mon Espace doivent être grisés dans la bottom bar et non cliquables
+Si le visiteur appuie sur ‘Contacter’ : ouvrir la page de connexion avec le message exact : ‘Connectez-vous pour contacter ce garage’
+Si le visiteur appuie sur ‘Laisser un avis’ : ouvrir la page de connexion avec le message exact : ‘Connectez-vous pour laisser un avis’
+Ces redirections vers la connexion sont obligatoires et ne doivent jamais être contournées
+3. Connexion réussie — OBLIGATOIRE
+Compte existant → retrouver profil, conversations, favoris → rediriger vers accueil
+Nouveau compte → afficher écran onboarding (Prénom, Nom, Photo de profil) → rediriger vers accueil
+Ces deux cas doivent être gérés séparément, pas de raccourci
+4. Déconnexion — OBLIGATOIRE
+Dès qu’un utilisateur ou pro se déconnecte, rediriger IMMÉDIATEMENT vers la page de connexion
+Le bouton ‘Ignorer’ doit être présent sur cette page
+Aucune donnée personnelle ne doit rester visible après déconnexion
+La navigation en arrière (swipe back) ne doit pas permettre de revenir à l’app après déconnexion
+5. Retour sur l’app après fermeture — OBLIGATOIRE
+Utilisateur connecté avant fermeture → reconnecter automatiquement via la session Supabase → aller directement sur l’accueil sans repasser par la page de connexion
+Utilisateur non connecté ou déconnecté → afficher obligatoirement la page de connexion avec le bouton ‘Ignorer’
+Ne pas inverser ces deux cas”**

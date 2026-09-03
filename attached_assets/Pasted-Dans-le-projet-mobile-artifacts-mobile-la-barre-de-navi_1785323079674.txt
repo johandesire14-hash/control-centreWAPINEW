@@ -1,0 +1,18 @@
+Dans le projet mobile (artifacts/mobile), la barre de navigation en bas de l'application se superpose avec la barre système Android (boutons virtuels ou geste de navigation), sur AU MOINS deux écrans différents :
+ 
+1. artifacts/mobile/app/(tabs)/_layout.tsx — la barre de navigation principale (Accueil, Recherche, Messages, Mon Espace)
+2. artifacts/mobile/app/(garage)/_layout.tsx — la barre de navigation côté espace professionnel/garage
+ 
+Dans les deux fichiers, la hauteur et le padding de la barre de navigation utilisent probablement des valeurs fixes (par exemple des nombres codés en dur comme height: 68 ou paddingBottom: 10) au lieu de s'adapter à l'espace réel réservé par le système Android, qui varie selon les téléphones (barre de gestes, boutons virtuels, etc.). Sur iOS, ce problème n'existe pas car le comportement par défaut gère déjà correctement cette zone.
+ 
+Corrige ceci dans CHAQUE fichier concerné (cherche dans tout artifacts/mobile/app pour trouver TOUS les fichiers _layout.tsx qui définissent une barre de navigation en bas avec des valeurs de hauteur/padding fixes, pas seulement les deux mentionnés ci-dessus si d'autres existent) :
+ 
+1. Importe useSafeAreaInsets depuis "react-native-safe-area-context" (déjà présent dans les dépendances du projet).
+2. Dans le composant de layout concerné, récupère les valeurs avec const insets = useSafeAreaInsets();
+3. Remplace les valeurs fixes de hauteur et de paddingBottom de la tabBarStyle (ou équivalent) par des calculs qui intègrent insets.bottom, afin que la barre de navigation laisse toujours l'espace nécessaire pour la barre système Android, quel que soit le téléphone.
+4. Conserve le comportement visuel actuel sur iOS, qui fonctionne déjà correctement — assure-toi que la correction ne modifie que le comportement sur Android.
+5. Ne touche à rien d'autre dans ces fichiers (styles, logique de navigation, icônes, contenu des écrans).
+ 
+Une fois terminé, donne-moi :
+1. La liste complète de tous les fichiers _layout.tsx modifiés.
+2. Confirmation qu'aucun autre écran de l'application n'a une barre de navigation en bas avec le même problème (mentionne-les explicitement si tu en trouves d'autres que les deux déjà cités).

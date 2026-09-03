@@ -1,0 +1,38 @@
+Effectue une refonte complète et robuste du système de vérification OTP par WhatsApp dans notre application en appliquant l'ensemble des corrections suivantes :
+
+1. SELECTION DU PAYS ET NETTOYAGE DU NUMÉRO (FRANCE + CONGO) :
+   - Dans le composant de saisie du téléphone (PhoneInput / Mon Espace), autorise la sélection des indicatifs : Congo (+242) et France (+33).
+   - Assure-toi que la fonction sanitizePhone() nettoie correctement le numéro avant l'envoi vers le backend (suppression du '+', des espaces et des tirets, ex: "+33 7 58 44 80 14" -> "33758448014", "+242 06 47 32 120" -> "242064732120").
+
+2. PASSAGE À L'API TEMPLATE INFOBIP (RÈGLE META/WHATSAPP) :
+   - Dans backend/whatsapp.ts, modifie la requête Infobip pour utiliser l'endpoint des modèles WhatsApp pré-approuvés (`/whatsapp/1/message/template`) au lieu du texte libre (`/whatsapp/1/message/text`).
+   - Adapte le body de la requête au format JSON exigé par Infobip pour les templates :
+     {
+       "messages": [
+         {
+           "from": INFOBIP_WHATSAPP_SENDER,
+           "to": formattedPhone,
+           "content": {
+             "templateName": process.env.INFOBIP_TEMPLATE_NAME || "otp_code",
+             "templateData": {
+               "body": {
+                 "placeholders": [codeOTP]
+               }
+             },
+             "language": "fr"
+           }
+         }
+       ]
+     }
+   - Remarque : Si le mode mock est actif (clés manquantes), garde le fallback d'affichage de l'OTP dans la console backend.
+
+3. SÉCURITÉ DES VARIABLES ET BASE URL (MOBILE FIX) :
+   - S'assurer que le header `Authorization: App ${INFOBIP_API_KEY}` est toujours présent.
+   - Corrige la variable `API_BASE` dans le frontend : si `process.env.EXPO_PUBLIC_DOMAIN` est indéfini ou vide, utilise la fallback URL courante pour éviter les crashs silencieux des requêtes fetch() sur React Native.
+
+4. CONTROL DU FLOW ET GESTION DES ERREURS DANS L'UI :
+   - Dans l'écran frontend, ne passe sur l'écran de saisie du code (`setStep("otp")`) QUE SI l'envoi API a réussi à 100% (statut HTTP 200/201).
+   - Si la requête Infobip échoue (ex: code 579, numéro non autorisé, erreur 400/500), stoppe la progression, reste sur le formulaire et affiche le message d'erreur explicite renvoyé par le backend dans la vue.
+   - Conserve les `console.log` détaillés côté backend ([whatsapp] → Sending..., [whatsapp] ← Infobip response status + body) pour qu'on puisse suivre les envois dans les logs Replit.
+
+Vérifie l'ensemble du code une fois les modifications terminées et donne-moi un récapitulatif des fichiers mis à jour.
