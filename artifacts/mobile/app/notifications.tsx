@@ -54,7 +54,7 @@ function timeAgo(dateStr: string): string {
 }
 
 function getApiBaseUrl(): string {
-  if ((process.env.EXPO_PUBLIC_API_DOMAIN || "6c2221bd-c94a-4551-a181-36ee1b366c83-00-2nn64jxbrnxn0.archer.replit.dev")) return `https://${(process.env.EXPO_PUBLIC_API_DOMAIN || "6c2221bd-c94a-4551-a181-36ee1b366c83-00-2nn64jxbrnxn0.archer.replit.dev")}`;
+  if ((process.env.EXPO_PUBLIC_API_DOMAIN || "")) return `https://${(process.env.EXPO_PUBLIC_API_DOMAIN || "")}`;
   return "";
 }
 

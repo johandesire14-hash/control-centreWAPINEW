@@ -46,7 +46,7 @@ interface PaymentMethodModalProps {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const _rawDomain = (process.env.EXPO_PUBLIC_API_DOMAIN || "6c2221bd-c94a-4551-a181-36ee1b366c83-00-2nn64jxbrnxn0.archer.replit.dev");
+const _rawDomain = (process.env.EXPO_PUBLIC_API_DOMAIN || "");
 if (!_rawDomain) {
   console.error(
     "[PaymentMethodModal] ⚠️  EXPO_PUBLIC_API_DOMAIN is not set — API calls will fail on device. " +

@@ -8,7 +8,7 @@
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
 const BUCKET = "wapi-bucket";
-const DOMAIN = (process.env.EXPO_PUBLIC_API_DOMAIN || "6c2221bd-c94a-4551-a181-36ee1b366c83-00-2nn64jxbrnxn0.archer.replit.dev") ?? "";
+const DOMAIN = (process.env.EXPO_PUBLIC_API_DOMAIN || "") ?? "";
 
 // Prefix inside the Supabase storage path that we strip to get the object key
 const STORAGE_PUBLIC_PREFIX = `/storage/v1/object/public/${BUCKET}/`;

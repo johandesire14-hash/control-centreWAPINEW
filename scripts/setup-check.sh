@@ -69,6 +69,28 @@ check_var "SESSION_SECRET" \
   "Générez avec : openssl rand -hex 32"
 
 echo ""
+
+echo -e "${BOLD}── API publique ──${RESET}"
+check_var "EXPO_PUBLIC_API_DOMAIN" \
+  "Domaine HTTPS utilisé par l'application mobile pour joindre l'API" \
+  "Replit Deployments ou votre hébergeur API"
+
+echo ""
+echo -e "${BOLD}── Paiements KPay ──${RESET}"
+check_var "KPAY_API_URL" \
+  "URL de l'API KPay" \
+  "Paramètres fournis par KPay"
+check_var "KPAY_API_KEY" \
+  "Clé API KPay" \
+  "Compte marchand KPay"
+check_var "KPAY_SECRET_KEY" \
+  "Clé secrète utilisée pour initialiser les paiements" \
+  "Compte marchand KPay"
+check_var "KPAY_WEBHOOK_SECRET" \
+  "Secret utilisé pour authentifier les notifications KPay" \
+  "Compte marchand KPay"
+
+echo ""
 echo -e "${BOLD}══════════════════════════════════════════${RESET}"
 
 if [ "$MISSING" -gt 0 ]; then
