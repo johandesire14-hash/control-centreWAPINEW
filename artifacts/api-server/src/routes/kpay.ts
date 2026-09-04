@@ -44,7 +44,11 @@ router.post("/webhook", rateLimit({ keyPrefix: "kpay-webhook", windowMs: 60_000,
     const [invoice] = payment.invoiceId
       ? await db.select().from(invoicesTable).where(eq(invoicesTable.id, payment.invoiceId))
       : [];
-    if (!invoice || Number(payment.amount) !== Number(invoice.amount) || invoice.expiresAt <= new Date()) {
+    const webhookAmount = payload.amount ?? payload.paymentAmount ?? payload.payment_amount;
+    const hasWebhookAmount = webhookAmount !== undefined && webhookAmount !== null && webhookAmount !== "";
+    const webhookAmountMatches = !hasWebhookAmount
+      || (Number.isFinite(Number(webhookAmount)) && Number(webhookAmount) === Number(invoice?.amount));
+    if (!invoice || Number(payment.amount) !== Number(invoice.amount) || !webhookAmountMatches || invoice.expiresAt <= new Date()) {
       await db.update(kpayPaymentsTable).set({ status: "FAILED", transactionId, rawWebhookPayload: payload, updatedAt: new Date() }).where(eq(kpayPaymentsTable.id, payment.id));
       return res.status(409).json({ error: "Paiement confirmé mais facture expirée ou montant incohérent." });
     }
