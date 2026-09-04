@@ -86,7 +86,12 @@ function getGoogleCallbackUrl(req: Request): string {
 }
 
 function getOAuthStateSecret(): string {
-  return process.env.GOOGLE_CLIENT_SECRET || process.env.OAUTH_STATE_SECRET || "development-oauth-state-secret";
+  const configured = process.env.GOOGLE_CLIENT_SECRET || process.env.OAUTH_STATE_SECRET;
+  if (configured) return configured;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("OAuth state secret is not configured in production.");
+  }
+  return "development-oauth-state-secret";
 }
 
 function createOAuthState(mobileRedirect: string): string {
@@ -133,7 +138,8 @@ router.get("/auth/google", rateLimit({ keyPrefix: "oauth-start", windowMs: 10 * 
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) {
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || (process.env.NODE_ENV === "production" && !clientSecret)) {
     res.status(500).json({ error: "Google Sign-In is not configured" });
     return;
   }
