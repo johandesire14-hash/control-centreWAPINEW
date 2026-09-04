@@ -2,13 +2,16 @@ name: WapiGarage CI
 
 on:
   push:
-    branches: [main, security-hardening]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  typecheck-and-build:
+  validate:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,26 +21,20 @@ jobs:
         with:
           version: 10.26.1
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
-      - name: Typecheck database package
-        run: pnpm --filter @workspace/db exec tsc -p tsconfig.json
-
-      - name: Typecheck API
-        run: pnpm --filter @workspace/api-server run typecheck
-
-      - name: Build API
-        run: pnpm --filter @workspace/api-server run build
-
-      - name: Typecheck mobile
-        run: pnpm --filter @workspace/mobile exec tsc --noEmit --pretty false
+      - name: Typecheck
+        run: pnpm run typecheck
 
       - name: Security contract tests
-        run: pnpm test:security-contracts
+        run: pnpm run test:security-contracts
+
+      - name: Build API server
+        run: pnpm --filter @workspace/api-server run build
