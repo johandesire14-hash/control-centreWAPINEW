@@ -1,1 +1,0 @@
-{"version":3,"file":"certificationRequest.d.ts","sourceRoot":"","sources":["../../../src/generated/types/certificationRequest.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,uBAAuB,CAAC;AAEjE,MAAM,WAAW,oBAAoB;IACnC,EAAE,EAAE,MAAM,CAAC;IACX,MAAM,EAAE,mBAAmB,CAAC;IAC5B,YAAY,EAAE,MAAM,EAAE,CAAC;IACvB,SAAS,EAAE,IAAI,CAAC;CACjB"}
