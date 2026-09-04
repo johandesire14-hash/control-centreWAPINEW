@@ -18,16 +18,16 @@ const garage = read("artifacts/mobile/app/garage/[id].tsx");
 const has = (source, pattern) => assert.match(source, pattern);
 
 test("le paiement recharge invoiceId et le montant serveur", () => {
-  has(kpay, /const invoiceId = typeof body\.invoiceId/);
+  has(kpay, /const invoiceId = typeof req\.body\?\.invoiceId/);
   has(kpay, /eq\(invoicesTable\.id, invoiceId\)/);
-  has(kpay, /String\(invoice\.invoice\.amount\)/);
+  has(kpay, /amount: invoice\.amount/);
   has(mobilePay, /invoiceId: payload\.invoiceId/);
 });
 
 test("le webhook exige une signature et protège les doublons", () => {
-  has(kpay, /signatureMatches/);
-  has(kpay, /rawBody/);
-  has(kpay, /idempotent|status === "PAID"/);
+  has(kpay, /validWebhookSecret/);
+  has(kpay, /timingSafeEqual/);
+  has(kpay, /payment\.status === "SUCCESS"\s*\|\|\s*payment\.status === "PAID"/);
   has(kpay, /invoiceId/);
 });
 
