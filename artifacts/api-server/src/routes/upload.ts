@@ -7,6 +7,13 @@ const router: IRouter = Router();
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 const BUCKET = "wapi-bucket";
+const ALLOWED_IMAGE_TYPES = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+  ["image/heic", "heic"],
+  ["image/heif", "heif"],
+]);
 
 // Accept raw binary body for this route only
 router.post(
@@ -31,8 +38,12 @@ router.post(
       return;
     }
 
-    const contentType = (req.headers["content-type"] ?? "image/jpeg").split(";")[0].trim();
-    const ext = contentType.split("/")[1] ?? "jpg";
+    const contentType = (req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+    const ext = ALLOWED_IMAGE_TYPES.get(contentType);
+    if (!ext) {
+      res.status(415).json({ error: "Format d'image non supporté." });
+      return;
+    }
     const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`;
