@@ -8,7 +8,9 @@
     "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:integration:payments": "tsx --test tests/integration/payments/kpay-webhook.integration.test.ts"
+    "test:integration:payments": "tsx --test tests/integration/payments/kpay-webhook.integration.test.ts",
+    "test:integration:invoices": "tsx --test tests/integration/invoices/invoices.integration.test.ts",
+    "test:integration:uploads": "tsx --test tests/integration/uploads/uploads.integration.test.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",

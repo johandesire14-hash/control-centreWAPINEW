@@ -100,6 +100,24 @@ router.post("/invoices/from-conversation/:conversationId", rateLimit({ keyPrefix
   }
 });
 
+router.delete("/invoices/:invoiceId", async (req: Request, res: Response) => {
+  if (!authenticated(req, res)) return;
+  const invoiceId = Array.isArray(req.params.invoiceId) ? req.params.invoiceId[0] : req.params.invoiceId;
+  try {
+    const [invoice] = await db.select().from(invoicesTable).where(eq(invoicesTable.id, invoiceId));
+    if (!invoice) return res.status(404).json({ error: "Facture introuvable." });
+    const [garage] = await db.select().from(garagesTable).where(eq(garagesTable.id, invoice.garageId));
+    if (!garage || garage.ownerId !== req.user!.id) return res.status(403).json({ error: "Seul le garage émetteur peut annuler cette facture." });
+    if (invoice.status === "paid") return res.status(409).json({ error: "Une facture déjà payée ne peut pas être annulée." });
+    if (!["issued", "pending"].includes(invoice.status)) return res.status(409).json({ error: "Cette facture ne peut plus être annulée." });
+    await db.update(invoicesTable).set({ status: "cancelled", updatedAt: new Date() }).where(and(eq(invoicesTable.id, invoice.id), or(eq(invoicesTable.status, "issued"), eq(invoicesTable.status, "pending"))));
+    return res.status(200).json({ invoiceId: invoice.id, status: "cancelled" });
+  } catch (error) {
+    console.error("[invoices/cancel] failed", error);
+    return res.status(500).json({ error: "Impossible d’annuler la facture." });
+  }
+});
+
 router.get("/invoices/:invoiceId", async (req: Request, res: Response) => {
   if (!authenticated(req, res)) return;
   const invoiceId = Array.isArray(req.params.invoiceId) ? req.params.invoiceId[0] : req.params.invoiceId;

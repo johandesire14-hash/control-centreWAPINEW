@@ -1,5 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import express from "express";
+import { eq } from "drizzle-orm";
+import { garagesTable, db } from "@workspace/db";
 import { rateLimit } from "../middlewares/rateLimit";
 
 const router: IRouter = Router();
@@ -24,6 +26,15 @@ router.post(
     if (!req.isAuthenticated()) {
       res.status(401).json({ error: "Unauthorized" });
       return;
+    }
+
+    const requestedGarageId = Number(req.query.garageId);
+    if (Number.isFinite(requestedGarageId) && requestedGarageId > 0) {
+      const [garage] = await db.select({ ownerId: garagesTable.ownerId }).from(garagesTable).where(eq(garagesTable.id, requestedGarageId));
+      if (!garage || garage.ownerId !== req.user!.id) {
+        res.status(403).json({ error: "Vous ne pouvez pas téléverser une image pour ce garage." });
+        return;
+      }
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {

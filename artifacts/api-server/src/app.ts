@@ -49,7 +49,11 @@ app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   const status = (err as { status?: number; statusCode?: number })?.status
     ?? (err as { status?: number; statusCode?: number })?.statusCode
     ?? 500;
-  const message = status >= 500 ? "Erreur serveur interne." : "Requête invalide.";
+  const message = status === 413
+    ? "Fichier trop volumineux."
+    : status >= 500
+      ? "Erreur serveur interne."
+      : "Requête invalide.";
 
   logger.error({ err, url: req.url, method: req.method }, "Unhandled route error");
 
