@@ -8,11 +8,13 @@ if (!connectionString) {
   throw new Error("SUPABASE_DATABASE_URL must be set.");
 }
 
+const isLocalPostgres = /(?:localhost|127\.0\.0\.1)/.test(connectionString);
+
 export default defineConfig({
   schema: path.join(__dirname, "./src/schema/index.ts"),
   dialect: "postgresql",
   dbCredentials: {
     url: connectionString,
-    ssl: true,
+    ssl: !isLocalPostgres,
   },
 });

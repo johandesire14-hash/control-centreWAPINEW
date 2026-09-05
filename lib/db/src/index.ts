@@ -14,6 +14,7 @@ if (!rawConnectionString) {
 // PgBouncer (Supabase transaction-mode pooler, port 6543) doesn't support
 // named prepared statements. Adding ?pgbouncer=true instructs the pg driver
 // to use the simple query protocol, which is pooler-safe.
+const isLocalPostgres = /(?:localhost|127\.0\.0\.1)/.test(rawConnectionString);
 const connectionString = rawConnectionString.includes("pgbouncer=true")
   ? rawConnectionString
   : rawConnectionString.includes("?")
@@ -22,7 +23,7 @@ const connectionString = rawConnectionString.includes("pgbouncer=true")
 
 const pool = new Pool({
   connectionString,
-  ssl: { rejectUnauthorized: false },
+  ssl: isLocalPostgres ? false : { rejectUnauthorized: false },
 });
 
 export const db = drizzle(pool, { schema });
