@@ -283,6 +283,10 @@ router.patch("/conversations/:conversationId/read", async (req: Request, res: Re
     res.status(403).json({ error: "Not a participant in this conversation" });
     return;
   }
+  if ((isClient && conversation.clientUnreadCount === 0) || (isGarageOwner && conversation.garageUnreadCount === 0)) {
+    res.status(403).json({ error: "Seul le destinataire peut marquer un nouveau message comme lu." });
+    return;
+  }
 
   await db
     .update(messagesTable)
@@ -296,6 +300,18 @@ router.patch("/conversations/:conversationId/read", async (req: Request, res: Re
 
   const serialized = await serializeConversation(conversationId);
   res.json(MarkConversationReadResponse.parse(serialized));
+});
+
+router.delete("/conversations/:conversationId/messages/:messageId", async (req: Request, res: Response) => {
+  if (!req.isAuthenticated()) return res.status(401).json({ error: "Unauthorized" });
+  const conversationId = positiveIntParam(req.params.conversationId);
+  const messageId = positiveIntParam(req.params.messageId);
+  if (conversationId === null || messageId === null) return res.status(400).json({ error: "Identifiant invalide" });
+  const [message] = await db.select().from(messagesTable).where(and(eq(messagesTable.id, messageId), eq(messagesTable.conversationId, conversationId)));
+  if (!message) return res.status(404).json({ error: "Message introuvable." });
+  if (message.senderId !== req.user.id) return res.status(403).json({ error: "Seul l’auteur peut supprimer ce message." });
+  await db.delete(messagesTable).where(eq(messagesTable.id, messageId));
+  return res.json({ success: true });
 });
 
 router.delete("/conversations/:conversationId", async (req: Request, res: Response) => {

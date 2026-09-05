@@ -1,5 +1,5 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { and, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, or, sql, type SQL } from "drizzle-orm";
 import { db, garagesTable, garagePhotosTable, usersTable } from "@workspace/db";
 import {
   CreateGarageBody,
@@ -24,9 +24,10 @@ const router: IRouter = Router();
 router.get("/garages", async (req: Request, res: Response) => {
   const { q, neighborhood, specialty, minRating, certifiedOnly, emergencyOnly, sort } = req.query;
 
-  const conditions = [];
+  const conditions: SQL[] = [eq(garagesTable.certified, true)];
   if (typeof q === "string" && q.trim()) {
-    conditions.push(or(ilike(garagesTable.name, `%${q}%`), ilike(garagesTable.neighborhood, `%${q}%`)));
+    const searchCondition = or(ilike(garagesTable.name, `%${q}%`), ilike(garagesTable.neighborhood, `%${q}%`));
+    if (searchCondition) conditions.push(searchCondition);
   }
   if (typeof neighborhood === "string" && neighborhood.trim()) {
     conditions.push(ilike(garagesTable.neighborhood, `%${neighborhood}%`));

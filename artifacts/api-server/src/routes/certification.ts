@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { desc, eq } from "drizzle-orm";
-import { db, certificationRequestsTable } from "@workspace/db";
+import { db, certificationRequestsTable, garagesTable } from "@workspace/db";
 import {
   CreateCertificationRequestBody,
   CreateCertificationRequestResponse,
@@ -12,6 +12,12 @@ const router: IRouter = Router();
 router.post("/certification-requests", async (req: Request, res: Response) => {
   if (!req.isAuthenticated()) {
     res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const [ownedGarage] = await db.select({ id: garagesTable.id }).from(garagesTable).where(eq(garagesTable.ownerId, req.user.id));
+  if (!ownedGarage) {
+    res.status(403).json({ error: "Seul le propriétaire d’un garage peut demander une certification." });
     return;
   }
 

@@ -10,7 +10,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test:integration:payments": "tsx --test tests/integration/payments/kpay-webhook.integration.test.ts",
     "test:integration:invoices": "tsx --test tests/integration/invoices/invoices.integration.test.ts",
-    "test:integration:uploads": "tsx --test tests/integration/uploads/uploads.integration.test.ts"
+    "test:integration:uploads": "tsx --test tests/integration/uploads/uploads.integration.test.ts",
+    "test:integration:messaging": "tsx --test tests/integration/messaging/messaging.integration.test.ts",
+    "test:integration:garages": "tsx --test tests/integration/garages/garages.integration.test.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.21.0",
