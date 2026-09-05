@@ -82,7 +82,7 @@ async function postWebhook(payload: Record<string, unknown>) {
   return { response, body };
 }
 
-describe("KPay webhook — PostgreSQL integration", () => {
+describe("KPay webhook — PostgreSQL integration", { concurrency: false }, () => {
   before(async () => {
     process.env.KPAY_WEBHOOK_SECRET = WEBHOOK_SECRET;
     server = app.listen(0);

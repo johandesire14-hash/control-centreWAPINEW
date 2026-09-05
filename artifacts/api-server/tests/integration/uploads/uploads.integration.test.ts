@@ -49,7 +49,7 @@ async function request(path: string, init: RequestInit, actor: Actor) {
   return { response, body };
 }
 
-describe("Uploads — intégration PostgreSQL", () => {
+describe("Uploads — intégration PostgreSQL", { concurrency: false }, () => {
   before(async () => {
     server = app.listen(0);
     await new Promise<void>((resolve) => server.once("listening", resolve));

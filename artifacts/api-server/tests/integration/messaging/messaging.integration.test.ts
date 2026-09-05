@@ -28,7 +28,7 @@ async function fixture() {
 }
 async function request(path: string, init: RequestInit = {}, user?: Actor) { const headers = new Headers(init.headers); if (user) headers.set("cookie", user.cookie); const response = await fetch(`${baseUrl}${path}`, { ...init, headers }); return { response, body: await response.json().catch(() => null) }; }
 
-describe("Messagerie — intégration PostgreSQL", () => {
+describe("Messagerie — intégration PostgreSQL", { concurrency: false }, () => {
   before(async () => { server = app.listen(0); await new Promise<void>(r => server.once("listening", r)); const address = server.address(); if (!address || typeof address === "string") throw new Error("server did not start"); baseUrl = `http://127.0.0.1:${address.port}`; });
   beforeEach(resetDatabase);
   after(async () => { await new Promise<void>((resolve, reject) => server.close(e => e ? reject(e) : resolve())); await db.$client.end(); });
