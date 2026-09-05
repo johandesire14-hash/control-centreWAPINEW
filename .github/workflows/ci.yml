@@ -11,30 +11,54 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: wapigarge_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d wapigarge_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/wapigarge_test
+      KPAY_WEBHOOK_SECRET: ci-integration-test-secret
+      EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:1
+      SUPABASE_SERVICE_ROLE_KEY: ci-integration-placeholder
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.26.1
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
+      - name: Apply Drizzle schema
+        run: pnpm --filter @workspace/db run push
       - name: Typecheck
         run: pnpm run typecheck
-
       - name: Security contract tests
         run: pnpm run test:security-contracts
-
       - name: Build API server
         run: pnpm --filter @workspace/api-server run build
+      - name: Integration tests — payments
+        run: pnpm --filter @workspace/api-server run test:integration:payments
+      - name: Integration tests — invoices
+        run: pnpm --filter @workspace/api-server run test:integration:invoices
+      - name: Integration tests — uploads
+        run: pnpm --filter @workspace/api-server run test:integration:uploads
+      - name: Integration tests — messaging
+        run: pnpm --filter @workspace/api-server run test:integration:messaging
+      - name: Integration tests — garages
+        run: pnpm --filter @workspace/api-server run test:integration:garages
